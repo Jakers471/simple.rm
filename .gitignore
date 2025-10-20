@@ -7,9 +7,6 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 
-# Reference materials - do not track
-references/
-
 # Claude Flow generated files
 .claude/settings.local.json
 claude-flow.config.json
@@ -68,8 +65,12 @@ hive-mind-prompt-*.txt
 coverage/
 .nyc_output/
 
-# Archive and reports (working files)
-archive/
-reports/*.txt
-reports/*.json
-reports/*.xml
+# Large binary files and nested git repos in references
+references/**/*.pack
+references/**/*.db
+references/**/*.db.backup
+references/**/*.onnx
+references/**/*.onnx.data
+references/**/.git/
+references/**/node_modules/
+references/**/bin/*-pkg
