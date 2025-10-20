@@ -12,13 +12,13 @@ references/
 
 # Claude Flow generated files
 .claude/settings.local.json
-.mcp.json
 claude-flow.config.json
 .swarm/
 .hive-mind/
 .claude-flow/
 memory/
 coordination/
+# Keep .mcp.json for project setup
 memory/claude-flow-data.json
 memory/sessions/*
 !memory/sessions/README.md
