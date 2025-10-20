@@ -1,0 +1,41 @@
+Create a comprehensive 3-phase implementation plan for a trading risk manager system.
+
+## Context
+Review all documentation in archive/OLD_PROJECT_DOCS/:
+- 12 risk rules (RULE-001 through RULE-012)
+- 4 core modules (MOD-001 through MOD-004)
+- System architecture v2 (ARCH-V2)
+
+## Project Background
+This is a fresh start on a previously planned trading risk manager. The archived docs contain all the specifications, but we want the SDK agents to create a new implementation plan from scratch while referencing that work.
+
+## Requirements
+
+### Phase 1 - MVP (Week 1-2)
+- Implement core rules: RULE-001 (max contracts), RULE-002 (daily loss limit), RULE-009 (account balance tracking)
+- Basic lockout functionality
+- Simple event processing
+
+### Phase 2 - Complete Rule Set (Week 3-4)
+- Add all remaining rules (RULE-003 through RULE-012)
+- Advanced time-based restrictions
+- Frequency throttling
+- Full state management
+
+### Phase 3 - Production Ready (Week 5-6)
+- Performance optimization
+- Error handling and recovery
+- Monitoring and logging
+- Documentation and testing
+
+## Deliverables
+1. Detailed task breakdown for each phase
+2. Dependency map between components
+3. Timeline with milestones
+4. Risk assessment and mitigation strategies
+5. Testing strategy for each phase
+
+## Technical Stack
+- Python (asyncio for event processing)
+- SQLite for state persistence
+- Consider frameworks from archived research
