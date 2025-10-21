@@ -1,119 +1,199 @@
-# Trading Risk Manager - Fresh Start with SDK
+# 🎯 Risk Manager Project - Start Here
 
-**Last Updated**: 2025-10-19
-**Status**: Planning Phase
-
----
-
-## ⚡ Quick Start (3 Steps)
-
-```bash
-# 1. Initialize SDK (30 seconds)
-npx claude-flow@alpha init --force
-
-# 2. Start planning (interactive - easiest!)
-npx claude-flow@alpha hive-mind wizard
-
-# 3. Tell it your goal!
-# Example: "Plan trading risk manager. Check archive/OLD_PROJECT_DOCS/ for existing specs."
-```
-
-**That's it!** Agents take over from there.
+**Project Status:** Design & Specification Phase
+**AI-First Development:** Building specs for AI agents to implement
 
 ---
 
-## 📋 Command Reference
-
-**COMMAND_MENU.md** ← **Complete list of 180+ SDK commands**
-- All agents, workflows, features documented
-- Organized by category
-- Copy-paste examples
-
-**COMMAND_MENU_SIMPLE.md** ← Simplified version (most common commands only)
-
----
-
-## 📂 Project Structure
+## 🗺️ Project Organization
 
 ```
-your-project/
-├── COMMAND_MENU.md              ← 📋 Complete SDK commands (180+)
-├── COMMAND_MENU_SIMPLE.md       ← 📋 Simplified commands (common ones)
-├── PROJECT_STRUCTURE.md         ← 📂 What each folder is
-├── START_HERE.md                ← 🚀 This file
+simple risk manager/
 │
-├── HOW_TO_USE_SDK/              ← 📖 SDK help docs
-│   ├── README.md                ← Navigation
-│   ├── START_HERE.md            ← Quick overview
-│   └── [detailed docs]          ← Optional reading
+├── 📐 project-specs/              ← AI SPECIFICATIONS (YOUR MAIN FOCUS)
+│   ├── AI_CONTEXT.md              ← 🔴 AI AGENTS: READ THIS FIRST!
+│   ├── SPECS/                     ← Organized specifications
+│   │   ├── 00-CORE-CONCEPT/       ✅ Architecture & overview
+│   │   ├── 01-EXTERNAL-API/       ✅ TopstepX API docs
+│   │   ├── 02-BACKEND-DAEMON/     ⏳ Daemon specs (TODO)
+│   │   ├── 03-RISK-RULES/         ✅ All 12 risk rules
+│   │   ├── 04-CORE-MODULES/       ✅ 4 core modules
+│   │   ├── 05-INTERNAL-API/       🔴 CRITICAL - Decision needed
+│   │   ├── 06-CLI-FRONTEND/       ⏳ UI specs (TODO)
+│   │   ├── 07-DATA-MODELS/        ⏳ Data structures (TODO)
+│   │   ├── 08-CONFIGURATION/      ⏳ Config specs (TODO)
+│   │   └── 99-IMPLEMENTATION-GUIDES/ (Future)
+│   ├── PROJECT_DOCS/              ← Original documentation
+│   └── TEMPLATES/                 ← Code templates (future)
 │
-├── docs/                        ← 📝 Fresh start (empty)
-├── archive/OLD_PROJECT_DOCS/    ← 📦 Previous work (reference)
-│   ├── architecture/
-│   ├── rules/ (RULE-001 to 012)
-│   └── modules/ (MOD-001 to 004)
+├── 📂 sdk/                        ← Claude Flow SDK (isolated)
+│   ├── .claude/                   ← Agents & commands
+│   ├── .claude-flow/              ← Metrics
+│   ├── coordination/              ← Orchestration
+│   ├── memory/                    ← Agent memory
+│   └── node_modules/              ← SDK dependencies
 │
-└── references/claude-flow/      ← 🔧 SDK source (don't touch)
+├── 💼 YOUR RISK MANAGER PROJECT:
+│   ├── src/                       ← Source code (empty - ready to build)
+│   ├── config/                    ← Config files (empty)
+│   ├── scripts/                   ← Utility scripts (empty)
+│   ├── tests/                     ← Tests (empty)
+│   │
+│   ├── examples/                  ← CLI/GUI examples
+│   │   ├── cli/trader/            ← Trader CLI examples
+│   │   ├── cli/admin/             ← Admin CLI examples
+│   │   ├── gui/                   ← GUI examples
+│   │   └── web/                   ← Web examples
+│   │
+│   ├── risk-manager-docs/         ← Your documentation
+│   ├── references/                ← Reference materials
+│   ├── reports/                   ← Project reports
+│   └── user.reference.md/         ← User references
+│
+└── 📦 Project Files:
+    ├── package.json               ← NPM config
+    └── .gitignore                 ← Git ignore rules
 ```
 
 ---
 
-## 💡 Key Points
+## 🚀 Quick Start Guide
 
-1. **SDK has 180+ commands** - Check COMMAND_MENU.md
-2. **All commands listed** - Complete reference now available
-3. **Use natural language** - No special syntax for prompts
-4. **Archived docs available** - Tell agents to check `archive/OLD_PROJECT_DOCS/`
-5. **Fresh start** - New `docs/` folder for planning output
+### For AI Agents (Claude Code, etc.):
+```
+1. Read: project-specs/AI_CONTEXT.md
+   ↳ Tells you project status, what's done, what's needed
+
+2. Navigate to: project-specs/SPECS/
+   ↳ See SPECS/README.md for navigation
+
+3. Check for _TODO.md files:
+   ↳ These show what needs design work
+
+4. Ready to implement?
+   ↳ Only if no _TODO.md in relevant folder
+```
+
+### For You (Project Owner):
+```
+1. Current Phase: Designing specs
+2. Next Critical Decision: Internal API protocol
+   ↳ See: project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md
+   ↳ Choose: HTTP API, Named Pipes, or SQLite?
+
+3. Continue working with agents to:
+   ↳ Complete missing specs (02, 05, 06, 07, 08)
+   ↳ Make design decisions
+   ↳ Document everything for AI implementation
+```
 
 ---
 
-## 🎯 What To Do
+## 🎯 Current Status
 
-### Option 1: Interactive (Recommended)
+### ✅ Complete Specs (Ready for AI Implementation):
+- **Architecture** - Complete system design (ARCH-V2)
+- **Risk Rules** - All 12 rules fully specified
+- **Core Modules** - All 4 modules fully specified
+- **External API** - TopstepX integration documented
+
+### ⏳ Incomplete Specs (Need Design Work):
+- **Backend Daemon** - How daemon works internally
+- **Internal API** - 🔴 CRITICAL - How CLI talks to daemon
+- **CLI Frontend** - User interface specifications
+- **Data Models** - Exact data structures
+- **Configuration** - Complete config file specs
+
+### 🚫 Future Work (Don't Start Yet):
+- Implementation guides
+- Code templates
+- Actual code implementation
+- Testing
+
+---
+
+## 📋 Next Steps
+
+**Immediate Priorities:**
+
+1. **Make Critical Decision** (BLOCKING):
+   - Read: `project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md`
+   - Choose communication protocol
+   - This unblocks CLI and daemon implementation
+
+2. **Complete Data Models**:
+   - Work with AI to define exact Python dataclasses
+   - Define SQLite database schema
+   - Document API response formats
+
+3. **Define CLI Specifications**:
+   - What screens does trader CLI have?
+   - What screens does admin CLI have?
+   - What UI library to use?
+
+4. **Complete Config Specs**:
+   - Full YAML specification
+   - Validation rules
+   - Example configs
+
+**Then:** Start implementation with AI agents
+
+---
+
+## 🔑 Key Files for AI
+
+**Start Here:**
+- `project-specs/AI_CONTEXT.md` - AI agent entry point
+
+**Architecture:**
+- `project-specs/SPECS/00-CORE-CONCEPT/architecture/system_architecture_v2.md`
+
+**Critical Missing Piece:**
+- `project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md`
+
+**All Specs Navigation:**
+- `project-specs/SPECS/README.md`
+
+---
+
+## 💡 Philosophy
+
+This is an **AI-first project**:
+- Specs are written FOR AI agents to implement
+- Precision over prose
+- Complete specifications enable autonomous implementation
+- Human makes decisions, AI executes
+
+**Current Goal:** Get specs 100% complete so AI can build the system autonomously.
+
+---
+
+## 📞 Quick Reference
+
+**To work on specs:**
 ```bash
-npx claude-flow@alpha hive-mind wizard
+cd project-specs/SPECS/
+# Find _TODO.md files
+# Work with AI to complete them
 ```
-Follow prompts, tell it your goal.
 
-### Option 2: Specific Agent
+**To see what's already defined:**
 ```bash
-npx claude-flow@alpha sparc run planner "Create implementation plan for trading risk manager. Reference archive/OLD_PROJECT_DOCS/ for existing specs."
+cd project-specs/PROJECT_DOCS/
+# Original documentation lives here
+# Linked into SPECS/ for organization
 ```
 
-### Option 3: Research First
+**To view examples:**
 ```bash
-npx claude-flow@alpha sparc run researcher "Research Python frameworks for real-time event processing"
+cd examples/
+# CLI and GUI examples for inspiration
 ```
 
 ---
 
-## ❓ Common Questions
+**Last Updated:** 2025-01-21
+**Current Phase:** Design & Specification
+**Next Milestone:** Complete all SPECS/ sections, then begin implementation
 
-**Q: Do I have all SDK commands now?**
-A: YES! COMMAND_MENU.md has the complete list (180+ commands).
-
-**Q: What about prompts - do I need special syntax?**
-A: NO! Just use natural language. Be specific about what you want.
-
-**Q: Can agents use my old project docs?**
-A: YES! Tell them: "Check archive/OLD_PROJECT_DOCS/ for context"
-
-**Q: Which commands should I start with?**
-A: `hive-mind wizard` (easiest) or `sparc run planner "your goal"`
-
----
-
-## 📖 More Info
-
-- **COMMAND_MENU.md** - All 180+ SDK commands
-- **PROJECT_STRUCTURE.md** - What each folder is
-- **HOW_TO_USE_SDK/** - Detailed SDK help (optional)
-
----
-
-**TL;DR**:
-1. Read `COMMAND_MENU.md` for all commands
-2. Run `npx claude-flow@alpha hive-mind wizard`
-3. Tell it your goal
-4. Agents do the work!
+🤖 **AI Agents:** Read `project-specs/AI_CONTEXT.md` first!
