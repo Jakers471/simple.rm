@@ -1,0 +1,64 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  detailed:
+    format: '[%(asctime)s] %(levelname)-8s [%(name)s:%(lineno)d] %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  simple:
+    format: '%(levelname)-8s %(message)s'
+  test_result:
+    format: '%(asctime)s | %(levelname)-8s | %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: tests/logs/test_execution.log
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+    encoding: utf-8
+
+  test_results:
+    class: logging.FileHandler
+    level: INFO
+    formatter: test_result
+    filename: tests/logs/test_results.log
+    mode: w  # Overwrite each run
+    encoding: utf-8
+
+  error_file:
+    class: logging.FileHandler
+    level: ERROR
+    formatter: detailed
+    filename: tests/logs/test_errors.log
+    mode: a  # Append errors
+    encoding: utf-8
+
+root:
+  level: DEBUG
+  handlers: [console, file]
+
+loggers:
+  pytest:
+    level: INFO
+    handlers: [test_results, console]
+    propagate: false
+
+  test_runner:
+    level: DEBUG
+    handlers: [file, error_file]
+    propagate: false
+
+  coverage:
+    level: INFO
+    handlers: [file]
+    propagate: false

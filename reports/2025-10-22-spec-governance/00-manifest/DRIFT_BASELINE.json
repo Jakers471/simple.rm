@@ -1,0 +1,325 @@
+{
+  "snapshot_date": "2025-10-22T07:55:00Z",
+  "snapshot_version": "1.0",
+  "purpose": "Drift detection baseline for specification governance",
+  "created_by": "Project Historian Agent",
+
+  "project_summary": {
+    "name": "Simple Risk Manager",
+    "version": "2.2",
+    "architecture_version": "ARCH-V2.2",
+    "total_spec_files": 100,
+    "total_documentation_lines": 15000,
+    "specification_status": "COMPLETE",
+    "implementation_status": "READY"
+  },
+
+  "spec_checksums": {
+    "core_architecture": {
+      "system_architecture_v2.md": "32b5054459968b4788ecd4f6ab00dcaa98bc2b7cf47df0256224668d07d8d4fa",
+      "COMPLETE_SPECIFICATION.md": "ae29adb3f3cdeb80a6eca16163096bd1bfa7ae66ca22dcfbb523c3950b6442bf",
+      "README.md": "675582a4ceb005b166139ddcba86f25ac052f1d83f63d9db12b3829c259e94b5"
+    },
+    "description": "SHA256 checksums for single-source-of-truth documents"
+  },
+
+  "api_endpoints": {
+    "total_rest_endpoints": 20,
+    "total_signalr_events": 9,
+    "total_websocket_events": 9,
+    "external_api": "ProjectX Gateway API v1.0",
+    "api_base": "https://gateway.topstepx.com/api",
+    "signalr_user_hub": "wss://rtc.topstepx.com/hubs/user",
+    "signalr_market_hub": "wss://rtc.topstepx.com/hubs/market",
+    "internal_websocket": "ws://localhost:8765"
+  },
+
+  "component_counts": {
+    "risk_rules": 12,
+    "core_modules": 9,
+    "database_tables": 9,
+    "state_objects": 15,
+    "enumerations": 5,
+    "cli_interfaces": 2
+  },
+
+  "protected_areas": {
+    "description": "Invariant paths that should not be modified without architectural review",
+    "single_source_of_truth": [
+      "project-specs/SPECS/00-CORE-CONCEPT/system_architecture_v2.md",
+      "project-specs/SPECS/COMPLETE_SPECIFICATION.md",
+      "project-specs/SPECS/README.md"
+    ],
+    "core_architecture": [
+      "project-specs/SPECS/00-CORE-CONCEPT/CURRENT_VERSION.md",
+      "project-specs/SPECS/00-CORE-CONCEPT/PROJECT_STATUS.md",
+      "project-specs/SPECS/00-CORE-CONCEPT/ARCHITECTURE_INDEX.md"
+    ],
+    "external_api_reference": [
+      "project-specs/SPECS/01-EXTERNAL-API/projectx_gateway_api/"
+    ],
+    "critical_specs": [
+      "project-specs/SPECS/02-BACKEND-DAEMON/DAEMON_ARCHITECTURE.md",
+      "project-specs/SPECS/02-BACKEND-DAEMON/EVENT_PIPELINE.md",
+      "project-specs/SPECS/02-BACKEND-DAEMON/STATE_MANAGEMENT.md",
+      "project-specs/SPECS/07-DATA-MODELS/DATABASE_SCHEMA.md",
+      "project-specs/SPECS/07-DATA-MODELS/STATE_OBJECTS.md"
+    ]
+  },
+
+  "last_audit": {
+    "date": "2025-10-22",
+    "auditor": "Error Handling Specification Writer",
+    "audit_type": "Error Handling & API Resilience",
+    "total_fixes": 41,
+    "verification_status": "VERIFIED",
+    "report_location": "docs/ERROR_HANDLING_SPECS_COMPLETE.md"
+  },
+
+  "last_audit_breakdown": {
+    "error_handling_specs": {
+      "total_specifications": 5,
+      "total_lines": 3610,
+      "total_size_kb": 108,
+      "critical_gaps_addressed": 6,
+      "high_priority_gaps_addressed": 1,
+      "files_created": [
+        "01-EXTERNAL-API/error-handling/ERROR_CODE_MAPPING_SPEC.md",
+        "01-EXTERNAL-API/error-handling/RATE_LIMITING_SPEC.md",
+        "01-EXTERNAL-API/error-handling/CIRCUIT_BREAKER_SPEC.md",
+        "01-EXTERNAL-API/error-handling/RETRY_STRATEGY_SPEC.md",
+        "01-EXTERNAL-API/error-handling/ERROR_LOGGING_SPEC.md",
+        "01-EXTERNAL-API/error-handling/README.md"
+      ]
+    },
+    "gaps_addressed": {
+      "critical": [
+        "GAP-API-006: Inadequate error code documentation (30+ mappings)",
+        "GAP-API-007: No rate limit tracking (sliding window, 50-200 req/min)",
+        "GAP-API-001: Token refresh strategy undefined (proactive 2-hour buffer)",
+        "GAP-API-003: Incomplete SignalR reconnection (complete handlers)",
+        "GAP-API-004: No exponential backoff (jitter factor 0.2)",
+        "GAP-API-SCENARIO-001: Network interruption during order execution"
+      ],
+      "high": [
+        "GAP-API-008: No circuit breaker pattern (state machine with service-specific configs)"
+      ]
+    },
+    "requirements_defined": {
+      "functional": 35,
+      "performance": 15,
+      "security": 10,
+      "reliability": 9,
+      "total": 69
+    }
+  },
+
+  "version_history": [
+    {
+      "version": "2.2",
+      "date": "2025-10-21",
+      "changes": "Added 5 new modules (MOD-005 to MOD-009), refactored all 12 rules to eliminate code duplication"
+    },
+    {
+      "version": "2.1",
+      "date": "2025-10-20",
+      "changes": "Market Hub connection for real-time quotes, enhanced stop-loss detection"
+    },
+    {
+      "version": "2.0",
+      "date": "2025-10-19",
+      "changes": "Modular enforcement architecture (MOD-001 to MOD-004)"
+    },
+    {
+      "version": "1.0",
+      "date": "2025-01-17",
+      "changes": "Initial architecture planning session"
+    }
+  ],
+
+  "specification_structure": {
+    "root": "project-specs/SPECS/",
+    "directories": {
+      "00-CORE-CONCEPT": {
+        "file_count": 4,
+        "description": "System architecture & project status"
+      },
+      "01-EXTERNAL-API": {
+        "file_count": 25,
+        "description": "TopstepX API integration (REST + SignalR)"
+      },
+      "02-BACKEND-DAEMON": {
+        "file_count": 3,
+        "description": "Daemon architecture, event pipeline, state management"
+      },
+      "03-RISK-RULES": {
+        "file_count": 13,
+        "description": "All 12 risk rule specifications + HOW_TO_ADD_NEW_RULES.md"
+      },
+      "04-CORE-MODULES": {
+        "file_count": 9,
+        "description": "All 9 core module specifications"
+      },
+      "05-INTERNAL-API": {
+        "file_count": 2,
+        "description": "WebSocket API for daemon ↔ CLI communication"
+      },
+      "06-CLI-FRONTEND": {
+        "file_count": 2,
+        "description": "Admin CLI & Trader CLI specifications"
+      },
+      "07-DATA-MODELS": {
+        "file_count": 4,
+        "description": "Database schema & Python dataclasses"
+      },
+      "08-CONFIGURATION": {
+        "file_count": 4,
+        "description": "YAML configuration specifications"
+      },
+      "99-IMPLEMENTATION-GUIDES": {
+        "file_count": 34,
+        "description": "API resilience, testing, deployment guides"
+      }
+    }
+  },
+
+  "completeness_metrics": {
+    "overall_specification_completeness": "85%",
+    "documentation_completeness": "100%",
+    "implementation_readiness": "100%",
+    "breakdown": {
+      "architecture": { "status": "COMPLETE", "progress": "100%" },
+      "api_integration": { "status": "COMPLETE", "progress": "100%" },
+      "risk_rules": { "status": "COMPLETE", "progress": "100%" },
+      "core_modules": { "status": "COMPLETE", "progress": "100%" },
+      "internal_api": { "status": "NEEDS_REVIEW", "progress": "80%" },
+      "cli_frontend": { "status": "NEEDS_REVIEW", "progress": "80%" },
+      "data_models": { "status": "NEEDS_REVIEW", "progress": "80%" },
+      "configuration": { "status": "COMPLETE", "progress": "100%" },
+      "implementation_guides": { "status": "NOT_STARTED", "progress": "0%" }
+    }
+  },
+
+  "staleness_warnings": [
+    {
+      "file": "project-specs/SPECS/00-CORE-CONCEPT/CURRENT_VERSION.md",
+      "issue": "References MOD-004 as last module, should reference MOD-009",
+      "severity": "MINOR",
+      "detected_at": "2025-10-22T07:55:00Z",
+      "status": "NEEDS_UPDATE"
+    },
+    {
+      "file": "project-specs/SPECS/00-CORE-CONCEPT/ARCHITECTURE_INDEX.md",
+      "issue": "Module table may not include MOD-005 through MOD-009",
+      "severity": "MINOR",
+      "detected_at": "2025-10-22T07:55:00Z",
+      "status": "NEEDS_UPDATE"
+    },
+    {
+      "file": "project-specs/SPECS/02-BACKEND-DAEMON/*.md",
+      "issue": "May reference old module structure (MOD-001 through MOD-004 only)",
+      "severity": "MEDIUM",
+      "detected_at": "2025-10-22T07:55:00Z",
+      "status": "NEEDS_REVIEW"
+    }
+  ],
+
+  "implementation_roadmap": {
+    "current_phase": "SPECIFICATION_COMPLETE",
+    "next_phase": "Phase 1: Minimal Viable Product",
+    "estimated_total_days": "16-24",
+    "phases": [
+      {
+        "name": "Phase 1: MVP",
+        "duration_days": "3-5",
+        "deliverables": [
+          "3 simple rules (RULE-001, RULE-002, RULE-009)",
+          "Basic daemon with event processing",
+          "State management (MOD-001, MOD-002, MOD-009)",
+          "Simple Trader CLI (SQLite-only, no real-time)"
+        ]
+      },
+      {
+        "name": "Phase 2: Full Rule Set",
+        "duration_days": "5-7",
+        "deliverables": [
+          "Remaining 9 rules",
+          "All 9 modules",
+          "Daily reset scheduler",
+          "PNL tracking"
+        ]
+      },
+      {
+        "name": "Phase 3: Real-Time & Admin",
+        "duration_days": "3-5",
+        "deliverables": [
+          "WebSocket server for real-time updates",
+          "Trader CLI with live dashboard",
+          "Admin CLI with beautiful UI",
+          "Windows Service wrapper"
+        ]
+      },
+      {
+        "name": "Phase 4: Production Hardening",
+        "duration_days": "5-7",
+        "deliverables": [
+          "Comprehensive testing",
+          "Error handling and recovery",
+          "Logging and monitoring",
+          "Performance optimization"
+        ]
+      }
+    ]
+  },
+
+  "drift_detection_rules": {
+    "description": "Rules for detecting specification drift",
+    "rules": [
+      {
+        "rule_id": "DRIFT-001",
+        "name": "Checksum Verification",
+        "description": "Compare checksums of single-source-of-truth documents",
+        "trigger": "Any change to core architecture files",
+        "action": "Alert if modified without architectural review"
+      },
+      {
+        "rule_id": "DRIFT-002",
+        "name": "Component Count Tracking",
+        "description": "Track changes to risk_rules, core_modules, database_tables counts",
+        "trigger": "Addition or removal of components",
+        "action": "Update manifest, verify dependencies"
+      },
+      {
+        "rule_id": "DRIFT-003",
+        "name": "API Endpoint Stability",
+        "description": "Ensure external API endpoints remain stable",
+        "trigger": "Change to 01-EXTERNAL-API/projectx_gateway_api/",
+        "action": "Alert - external API should not be modified"
+      },
+      {
+        "rule_id": "DRIFT-004",
+        "name": "Protected Area Modifications",
+        "description": "Detect unauthorized changes to protected specifications",
+        "trigger": "Modification to protected_areas files",
+        "action": "Require architectural review and approval"
+      },
+      {
+        "rule_id": "DRIFT-005",
+        "name": "Staleness Detection",
+        "description": "Identify references to old component counts or versions",
+        "trigger": "Version number mismatch, outdated module references",
+        "action": "Flag as needing update"
+      }
+    ]
+  },
+
+  "metadata": {
+    "baseline_version": "1.0",
+    "format": "JSON",
+    "encoding": "UTF-8",
+    "created_at": "2025-10-22T07:55:00Z",
+    "expires_at": null,
+    "next_review_date": "2025-11-22",
+    "review_frequency": "monthly"
+  }
+}

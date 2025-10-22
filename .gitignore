@@ -96,3 +96,27 @@ claude-flow
 hive-mind-prompt-*.txt
 venv/
 test-results/
+
+# Build artifacts and temp files (user-added)
+.coverage
+*.pyc
+*.pyo
+
+# Config backups and local configs
+.mcp.json.backup
+.wslconfig
+
+# Local scripts and wrappers
+*.bat
+*.ps1
+ruv-swarm-wrapper
+wsl
+enable_wsl_interop.sh
+claude-swarm.bat
+claude-swarm.sh
+open_reports.sh
+run_tests.sh
+view_test_results.sh
+
+# Example and swarm directories
+examples/swarm/

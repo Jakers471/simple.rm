@@ -1,0 +1,289 @@
+# Project Manifest - Simple Risk Manager
+# Version: 2.2
+# Last Audit: 2025-10-22
+# Format: TOML v1.0.0
+
+[project]
+name = "Simple Risk Manager"
+description = "Windows Service-based trading risk management system for TopstepX"
+version = "2.2"
+status = "SPECIFICATION_COMPLETE"
+last_audit = "2025-10-22"
+spec_count = 100
+api_version = "ProjectX Gateway API v1.0"
+architecture_version = "ARCH-V2.2"
+total_documentation_lines = 15000
+
+[project.versions]
+current = "2.2"
+previous = "2.1"
+history = [
+    { version = "2.2", date = "2025-10-21", changes = "Added 5 new modules (MOD-005 to MOD-009), refactored all 12 rules" },
+    { version = "2.1", date = "2025-10-20", changes = "Market Hub quotes, enhanced stop-loss detection" },
+    { version = "2.0", date = "2025-10-19", changes = "Modular enforcement architecture" },
+    { version = "1.0", date = "2025-01-17", changes = "Initial architecture planning" }
+]
+
+[environment]
+api_base = "https://gateway.topstepx.com/api"
+api_signalr_user_hub = "wss://rtc.topstepx.com/hubs/user"
+api_signalr_market_hub = "wss://rtc.topstepx.com/hubs/market"
+database = "SQLite 3.x (data/state.db)"
+auth_method = "API Key -> JWT Token"
+token_refresh_hours = 12
+platform = "Windows"
+service_type = "Windows Service (pywin32)"
+python_version = "3.10+"
+
+[environment.endpoints]
+total_rest_endpoints = 20
+total_signalr_events = 9
+total_websocket_events = 9
+
+[components]
+risk_rules = 12
+core_modules = 9
+database_tables = 9
+state_objects = 15
+enumerations = 5
+
+[components.risk_rules]
+total = 12
+trade_by_trade = ["RULE-001", "RULE-002", "RULE-012"]
+hard_lockout = ["RULE-003", "RULE-004", "RULE-005", "RULE-006", "RULE-009", "RULE-010", "RULE-011"]
+configurable_timer = ["RULE-006", "RULE-007"]
+list = [
+    "RULE-001: Max Contracts",
+    "RULE-002: Max Contracts Per Instrument",
+    "RULE-003: Daily Realized Loss",
+    "RULE-004: Daily Unrealized Loss",
+    "RULE-005: Max Unrealized Profit",
+    "RULE-006: Trade Frequency Limit",
+    "RULE-007: Cooldown After Loss",
+    "RULE-008: No Stop-Loss Grace Period",
+    "RULE-009: Session Block Outside Hours",
+    "RULE-010: Auth Loss Guard",
+    "RULE-011: Symbol Blocks",
+    "RULE-012: Trade Management"
+]
+
+[components.core_modules]
+total = 9
+list = [
+    "MOD-001: Enforcement Actions",
+    "MOD-002: Lockout Manager",
+    "MOD-003: Timer Manager",
+    "MOD-004: Reset Scheduler",
+    "MOD-005: PNL Tracker",
+    "MOD-006: Quote Tracker",
+    "MOD-007: Contract Cache",
+    "MOD-008: Trade Counter",
+    "MOD-009: State Manager"
+]
+
+[components.user_interfaces]
+admin_cli = "Password-protected, admin privileges required"
+trader_cli = "Real-time dashboard, read-only access"
+websocket_server = "ws://localhost:8765"
+
+[invariants]
+# Single Source of Truth - READ ONLY, DO NOT MODIFY
+single_source_of_truth = [
+    "project-specs/SPECS/00-CORE-CONCEPT/system_architecture_v2.md",
+    "project-specs/SPECS/COMPLETE_SPECIFICATION.md",
+    "project-specs/SPECS/README.md"
+]
+
+# Core architecture files - PROTECTED
+core_architecture = [
+    "project-specs/SPECS/00-CORE-CONCEPT/CURRENT_VERSION.md",
+    "project-specs/SPECS/00-CORE-CONCEPT/PROJECT_STATUS.md",
+    "project-specs/SPECS/00-CORE-CONCEPT/ARCHITECTURE_INDEX.md"
+]
+
+# External API definitions - FROM TOPSTEPX, DO NOT MODIFY
+external_api_reference = [
+    "project-specs/SPECS/01-EXTERNAL-API/projectx_gateway_api/**/*.md"
+]
+
+# Rule specifications - COMPLETE, REFACTOR ONLY IF NEEDED
+risk_rules_specs = [
+    "project-specs/SPECS/03-RISK-RULES/rules/*.md"
+]
+
+# Module specifications - COMPLETE, EXTEND ONLY
+module_specs = [
+    "project-specs/SPECS/04-CORE-MODULES/modules/*.md"
+]
+
+[invariants.protected_areas]
+description = "Areas that should not be modified without architectural review"
+areas = [
+    "Database schema (07-DATA-MODELS/DATABASE_SCHEMA.md)",
+    "State objects (07-DATA-MODELS/STATE_OBJECTS.md)",
+    "Event pipeline (02-BACKEND-DAEMON/EVENT_PIPELINE.md)",
+    "Daemon architecture (02-BACKEND-DAEMON/DAEMON_ARCHITECTURE.md)"
+]
+
+[audit_history]
+# Record of audits and major fixes
+
+[[audit_history.audits]]
+date = "2025-10-22"
+auditor = "Error Handling Specification Writer"
+audit_type = "Error Handling & API Resilience"
+total_fixes = 41
+status = "COMPLETE"
+report_file = "docs/ERROR_HANDLING_SPECS_COMPLETE.md"
+verified = true
+
+[audit_history.audits.breakdown]
+error_code_mapping = "30+ mappings documented"
+rate_limiting = "Sliding window algorithm, 50-200 req/min"
+circuit_breaker = "State machine with service-specific configs"
+retry_strategy = "Exponential backoff with jitter, operation-specific configs"
+error_logging = "Structured JSON, PII sanitization, GDPR-compliant"
+signalr_reconnection = "Complete handlers, state reconciliation"
+token_management = "Proactive refresh 2 hours before expiry"
+
+[audit_history.audits.deliverables]
+total_lines = 3610
+total_size_kb = 108
+total_specifications = 5
+average_spec_lines = 722
+documentation_files = [
+    "01-EXTERNAL-API/error-handling/ERROR_CODE_MAPPING_SPEC.md",
+    "01-EXTERNAL-API/error-handling/RATE_LIMITING_SPEC.md",
+    "01-EXTERNAL-API/error-handling/CIRCUIT_BREAKER_SPEC.md",
+    "01-EXTERNAL-API/error-handling/RETRY_STRATEGY_SPEC.md",
+    "01-EXTERNAL-API/error-handling/ERROR_LOGGING_SPEC.md",
+    "01-EXTERNAL-API/error-handling/README.md"
+]
+
+[audit_history.audits.gaps_addressed]
+critical = [
+    "GAP-API-006: Inadequate error code documentation",
+    "GAP-API-007: No rate limit tracking",
+    "GAP-API-001: Token refresh strategy undefined",
+    "GAP-API-003: Incomplete SignalR reconnection",
+    "GAP-API-004: No exponential backoff",
+    "GAP-API-SCENARIO-001: Network interruption during order"
+]
+high = [
+    "GAP-API-008: No circuit breaker pattern"
+]
+
+[[audit_history.audits]]
+date = "2025-10-21"
+auditor = "Architecture Team"
+audit_type = "Module Refactoring"
+total_fixes = 5
+status = "COMPLETE"
+description = "Added MOD-005 through MOD-009 to eliminate code duplication"
+
+[versioning]
+spec_id_format = "PREFIX-NNN (e.g., RULE-001, MOD-001)"
+status_values = ["DRAFT", "REVIEW", "APPROVED", "COMPLETE", "DEPRECATED"]
+current_status = "COMPLETE"
+labeling_convention = "doc_id in YAML front-matter"
+
+[versioning.id_ranges]
+ARCH = "Architecture documents (ARCH-V1, ARCH-V2, etc.)"
+RULE = "Risk rules (RULE-001 through RULE-012)"
+MOD = "Core modules (MOD-001 through MOD-009)"
+API = "API integration (API-INT-001)"
+CONFIG = "Configuration specs (CONFIG-001, CONFIG-002)"
+CLI = "CLI specifications (CLI-ADMIN-001, CLI-TRADER-001)"
+DATA = "Data models (DATA-001, DATA-002)"
+
+[specification_structure]
+root = "project-specs/SPECS/"
+directories = [
+    "00-CORE-CONCEPT",
+    "01-EXTERNAL-API",
+    "02-BACKEND-DAEMON",
+    "03-RISK-RULES",
+    "04-CORE-MODULES",
+    "05-INTERNAL-API",
+    "06-CLI-FRONTEND",
+    "07-DATA-MODELS",
+    "08-CONFIGURATION",
+    "99-IMPLEMENTATION-GUIDES"
+]
+
+[specification_structure.file_counts]
+"00-CORE-CONCEPT" = 4
+"01-EXTERNAL-API" = 25
+"02-BACKEND-DAEMON" = 3
+"03-RISK-RULES" = 13
+"04-CORE-MODULES" = 9
+"05-INTERNAL-API" = 2
+"06-CLI-FRONTEND" = 2
+"07-DATA-MODELS" = 4
+"08-CONFIGURATION" = 4
+"99-IMPLEMENTATION-GUIDES" = 34
+total = 100
+
+[implementation_status]
+phase = "SPECIFICATION_COMPLETE"
+ready_for_implementation = true
+estimated_development_days = "16-24"
+next_phase = "Phase 1: Minimal Viable Product (3-5 days)"
+
+[implementation_status.phases]
+phase_1 = { name = "MVP", duration_days = "3-5", deliverables = "3 rules, basic daemon, state management, simple CLI" }
+phase_2 = { name = "Full Rule Set", duration_days = "5-7", deliverables = "All 12 rules, all 9 modules, daily reset, PNL tracking" }
+phase_3 = { name = "Real-Time & Admin", duration_days = "3-5", deliverables = "WebSocket server, live dashboard, Admin CLI, Windows Service" }
+phase_4 = { name = "Production Hardening", duration_days = "5-7", deliverables = "Testing, error handling, logging, monitoring, optimization" }
+
+[quality_metrics]
+documentation_completeness = "100%"
+specification_completeness = "85%"
+implementation_readiness = "100%"
+
+[quality_metrics.documentation]
+total_lines = 15000
+total_files = 100
+average_file_lines = 150
+largest_file_lines = 1200
+smallest_file_lines = 50
+
+[quality_metrics.coverage]
+architecture = "100%"
+api_integration = "100%"
+risk_rules = "100%"
+core_modules = "100%"
+internal_api = "80%"
+cli_frontend = "80%"
+data_models = "80%"
+configuration = "100%"
+implementation_guides = "0%"
+
+[staleness_warnings]
+# Detected staleness in core concept documents
+detected_at = "2025-10-22"
+
+[[staleness_warnings.items]]
+file = "project-specs/SPECS/00-CORE-CONCEPT/CURRENT_VERSION.md"
+issue = "References MOD-004 as last module, should reference MOD-009"
+severity = "MINOR"
+status = "NEEDS_UPDATE"
+
+[[staleness_warnings.items]]
+file = "project-specs/SPECS/00-CORE-CONCEPT/ARCHITECTURE_INDEX.md"
+issue = "Module table may not include MOD-005 through MOD-009"
+severity = "MINOR"
+status = "NEEDS_UPDATE"
+
+[[staleness_warnings.items]]
+file = "project-specs/SPECS/02-BACKEND-DAEMON/*.md"
+issue = "May reference old module structure (MOD-001 through MOD-004 only)"
+severity = "MEDIUM"
+status = "NEEDS_REVIEW"
+
+[metadata]
+manifest_version = "1.0"
+created_at = "2025-10-22T07:55:00Z"
+created_by = "Project Historian Agent"
+purpose = "Establish baseline for drift detection and governance"
+last_updated = "2025-10-22T07:55:00Z"
