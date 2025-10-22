@@ -11,9 +11,9 @@ This module provides structured, thread-safe logging with:
 """
 
 from .config import setup_logging, get_logger, get_specialized_logger
-from .context import LogContext, log_context
+from .context import LogContext, log_context, get_log_context, get_correlation_id
 from .formatters import StructuredFormatter, MaskingFilter
-from .performance import log_performance, PerformanceTimer
+from .performance import log_performance, PerformanceTimer, timed
 
 __all__ = [
     'setup_logging',
@@ -21,8 +21,11 @@ __all__ = [
     'get_specialized_logger',
     'LogContext',
     'log_context',
+    'get_log_context',
+    'get_correlation_id',
     'StructuredFormatter',
     'MaskingFilter',
     'log_performance',
     'PerformanceTimer',
+    'timed',
 ]

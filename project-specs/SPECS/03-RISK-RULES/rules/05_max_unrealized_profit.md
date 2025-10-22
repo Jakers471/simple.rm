@@ -17,12 +17,31 @@ enforcement_type: Hard Lockout (Until Reset)
 ```yaml
 max_unrealized_profit:
   enabled: true
-  limit: 1000               # Take profit at +$1000 unrealized profit
-  reset_time: "17:00"       # Daily reset time (5:00 PM)
-  timezone: "America/New_York"
-  enforcement: "close_all_and_lockout"
-  lockout_until_reset: true
-  check_interval_seconds: 1  # How often to recalculate (every second)
+  mode: "profit_target"     # "profit_target" or "breakeven"
+  profit_target: 1000.00    # Take profit at +$1000 (when mode = "profit_target")
+  scope: "per_position"     # Close each position individually
+  action: "CLOSE_POSITION"  # Close only profitable position
+```
+
+**Configuration Modes:**
+
+**Mode 1: Profit Target** (Take profits at specific dollar amount)
+```yaml
+max_unrealized_profit:
+  enabled: true
+  mode: "profit_target"
+  profit_target: 1000.00    # Close position when it hits +$1000
+  scope: "per_position"
+  action: "CLOSE_POSITION"
+```
+
+**Mode 2: Breakeven** (Close when position returns to entry price)
+```yaml
+max_unrealized_profit:
+  enabled: true
+  mode: "breakeven"         # Close at $0 P&L
+  scope: "per_position"
+  action: "CLOSE_POSITION"
 ```
 
 ---

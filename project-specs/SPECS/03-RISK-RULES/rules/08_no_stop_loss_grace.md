@@ -18,8 +18,7 @@ enforcement_type: Trade-by-Trade (No Lockout)
 no_stop_loss_grace:
   enabled: true
   grace_period_seconds: 30  # Must place SL within 30 seconds of opening position
-  enforcement: "close_position"
-  lockout_on_breach: false
+  action: "CLOSE_POSITION"  # Close only position without stop-loss
 ```
 
 ---

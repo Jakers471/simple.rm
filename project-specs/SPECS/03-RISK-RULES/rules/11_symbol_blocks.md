@@ -20,10 +20,8 @@ symbol_blocks:
   blocked_symbols:
     - "RTY"     # Russell 2000 - never trade
     - "BTC"     # Bitcoin futures - never trade
-    - "CL"      # Crude Oil - too volatile
-  enforcement: "close_and_lockout_symbol"
-  allow_override: false  # Cannot be manually overridden
-  match_mode: "symbol_root"  # Match by symbol root (RTY matches all RTY contracts)
+  action: "CANCEL_ORDER"  # Cancel orders in blocked symbols (reactive)
+  close_existing: true    # Also close any existing positions in blocked symbols
 ```
 
 ---

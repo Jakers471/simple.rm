@@ -49,8 +49,13 @@ rules:
   # RULE-002: Max Contracts Per Instrument
   max_contracts_per_instrument:
     enabled: true
-    limit: 3
-    per_symbol: true
+    limits:
+      MNQ: 2    # Max 2 micro NQ contracts
+      NQ: 1     # Max 1 full NQ contract
+      ES: 1     # Max 1 ES contract
+      MES: 3    # Max 3 micro ES contracts
+    enforcement: "reduce_to_limit"  # "reduce_to_limit" or "close_all"
+    unknown_symbol_action: "allow_with_limit:1"  # Default limit for unlisted symbols
 
   # RULE-003: Daily Realized Loss
   daily_realized_loss:
@@ -63,13 +68,17 @@ rules:
   daily_unrealized_loss:
     enabled: true
     loss_limit: 300.00
-    action: "CLOSE_ALL_AND_LOCKOUT"
+    scope: "per_position"         # "total" or "per_position"
+    action: "CLOSE_POSITION"      # Close only losing position
+    lockout: false                # No lockout on per-position mode
 
   # RULE-005: Max Unrealized Profit
   max_unrealized_profit:
     enabled: true
-    profit_target: 1000.00
-    action: "CLOSE_ALL_POSITIONS"
+    mode: "profit_target"         # "profit_target" or "breakeven"
+    profit_target: 1000.00        # Used when mode = "profit_target"
+    scope: "per_position"         # Close each position individually
+    action: "CLOSE_POSITION"      # Close only profitable position
 
   # RULE-006: Trade Frequency Limit
   trade_frequency_limit:
@@ -87,7 +96,7 @@ rules:
   no_stop_loss_grace:
     enabled: true
     grace_period_seconds: 30
-    action: "CLOSE_ALL_POSITIONS"
+    action: "CLOSE_POSITION"      # Close only position without stop-loss
 
   # RULE-009: Session Block Outside Hours
   session_block_outside:
@@ -96,7 +105,7 @@ rules:
       start: "08:30"
       end: "15:00"
     timezone: "America/Chicago"
-    action: "REJECT_ORDER"
+    action: "CANCEL_ORDER"        # Cancel orders outside allowed hours
 
   # RULE-010: Auth Loss Guard
   auth_loss_guard:
@@ -107,9 +116,10 @@ rules:
   symbol_blocks:
     enabled: true
     blocked_symbols:
-      - "MES"
-      - "M2K"
-    action: "REJECT_ORDER"
+      - "RTY"   # Russell 2000
+      - "BTC"   # Bitcoin futures
+    action: "CANCEL_ORDER"        # Cancel orders in blocked symbols
+    close_existing: true          # Also close any existing positions
 
   # RULE-012: Trade Management
   trade_management:
@@ -198,24 +208,32 @@ max_contracts:
 
 ### **RULE-002: max_contracts_per_instrument**
 
-**Purpose:** Limit contracts per individual instrument
+**Purpose:** Limit contracts per individual instrument (per-symbol limits)
 
 ```yaml
 max_contracts_per_instrument:
   enabled: true
-  limit: 3                # Max contracts per symbol (default: 3)
-  per_symbol: true        # Apply limit per symbol (default: true)
+  limits:
+    MNQ: 2              # Max 2 micro NQ contracts
+    NQ: 1               # Max 1 full NQ contract
+    ES: 1               # Max 1 ES contract
+    MES: 3              # Max 3 micro ES contracts
+  enforcement: "reduce_to_limit"  # "reduce_to_limit" or "close_all"
+  unknown_symbol_action: "allow_with_limit:1"  # Default limit for unlisted symbols
 ```
 
 **Fields:**
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | bool | `true` | Enable/disable rule |
-| `limit` | int | `3` | Max contracts per instrument |
-| `per_symbol` | bool | `true` | Apply per symbol (vs per contract) |
+| `limits` | dict | `{}` | Per-symbol contract limits (symbol: limit) |
+| `enforcement` | string | `"reduce_to_limit"` | "reduce_to_limit" or "close_all" |
+| `unknown_symbol_action` | string | `"block"` | "block", "allow_with_limit:N", or "allow_unlimited" |
 
 **Validation:**
-- `limit` must be > 0
+- `limits` must be dict with string keys (symbols) and int values (limits)
+- All limit values must be > 0
+- `enforcement` must be "reduce_to_limit" or "close_all"
 
 **Reference:** `03-RISK-RULES/rules/02_max_contracts_per_instrument.md`
 
@@ -260,24 +278,29 @@ daily_realized_loss:
 
 ### **RULE-004: daily_unrealized_loss**
 
-**Purpose:** Limit daily unrealized loss (P&L from open positions)
+**Purpose:** Limit unrealized loss per position (per-trade stop-loss)
 
 ```yaml
 daily_unrealized_loss:
   enabled: true
-  loss_limit: 300.00              # Max unrealized loss (default: 300)
-  action: "CLOSE_ALL_AND_LOCKOUT"
+  loss_limit: 300.00              # Max unrealized loss per position (default: 300)
+  scope: "per_position"           # "total" or "per_position" (default: per_position)
+  action: "CLOSE_POSITION"        # Close only losing position
+  lockout: false                  # No lockout (default: false)
 ```
 
 **Fields:**
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | bool | `true` | Enable/disable rule |
-| `loss_limit` | float | `300.00` | Max unrealized loss |
-| `action` | string | `"CLOSE_ALL_AND_LOCKOUT"` | Enforcement action |
+| `loss_limit` | float | `300.00` | Max unrealized loss (per position or total) |
+| `scope` | string | `"per_position"` | "total" (all positions) or "per_position" (each position) |
+| `action` | string | `"CLOSE_POSITION"` | Enforcement action |
+| `lockout` | bool | `false` | Whether to lockout account |
 
 **Validation:**
 - `loss_limit` must be > 0
+- `scope` must be "total" or "per_position"
 
 **Reference:** `03-RISK-RULES/rules/04_daily_unrealized_loss.md`
 
@@ -285,24 +308,33 @@ daily_unrealized_loss:
 
 ### **RULE-005: max_unrealized_profit**
 
-**Purpose:** Auto-close positions at profit target
+**Purpose:** Auto-close positions at profit target or breakeven
 
 ```yaml
 max_unrealized_profit:
   enabled: true
-  profit_target: 1000.00          # Auto-close at profit (default: 1000)
-  action: "CLOSE_ALL_POSITIONS"
+  mode: "profit_target"           # "profit_target" or "breakeven"
+  profit_target: 1000.00          # Used when mode = "profit_target" (default: 1000)
+  scope: "per_position"           # Close each position individually
+  action: "CLOSE_POSITION"        # Close only profitable position
 ```
 
 **Fields:**
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | bool | `true` | Enable/disable rule |
-| `profit_target` | float | `1000.00` | Auto-close profit level |
-| `action` | string | `"CLOSE_ALL_POSITIONS"` | Enforcement action |
+| `mode` | string | `"profit_target"` | "profit_target" (close at $ amount) or "breakeven" (close at $0 P&L) |
+| `profit_target` | float | `1000.00` | Auto-close profit level (only for profit_target mode) |
+| `scope` | string | `"per_position"` | Close each position individually |
+| `action` | string | `"CLOSE_POSITION"` | Enforcement action |
+
+**Modes:**
+- `"profit_target"`: Close position when unrealized P&L reaches `profit_target` (e.g., +$1000)
+- `"breakeven"`: Close position when unrealized P&L reaches $0 (back to entry price)
 
 **Validation:**
-- `profit_target` must be > 0
+- `mode` must be "profit_target" or "breakeven"
+- `profit_target` must be > 0 (when mode = "profit_target")
 
 **Reference:** `03-RISK-RULES/rules/05_max_unrealized_profit.md`
 
@@ -368,7 +400,7 @@ cooldown_after_loss:
 no_stop_loss_grace:
   enabled: true
   grace_period_seconds: 30    # Grace period (default: 30)
-  action: "CLOSE_ALL_POSITIONS"
+  action: "CLOSE_POSITION"    # Close only position without stop-loss
 ```
 
 **Fields:**
@@ -376,7 +408,7 @@ no_stop_loss_grace:
 |-------|------|---------|-------------|
 | `enabled` | bool | `true` | Enable/disable rule |
 | `grace_period_seconds` | int | `30` | Time allowed without stop-loss |
-| `action` | string | `"CLOSE_ALL_POSITIONS"` | Enforcement action |
+| `action` | string | `"CLOSE_POSITION"` | Enforcement action (closes specific position) |
 
 **Validation:**
 - `grace_period_seconds` must be > 0
@@ -396,7 +428,7 @@ session_block_outside:
     start: "08:30"            # Session start time (default: 08:30)
     end: "15:00"              # Session end time (default: 15:00)
   timezone: "America/Chicago" # Timezone (default: America/Chicago)
-  action: "REJECT_ORDER"
+  action: "CANCEL_ORDER"      # Cancel orders outside hours
 ```
 
 **Fields:**
@@ -406,7 +438,7 @@ session_block_outside:
 | `allowed_hours.start` | string | `"08:30"` | Session start time (HH:MM) |
 | `allowed_hours.end` | string | `"15:00"` | Session end time (HH:MM) |
 | `timezone` | string | `"America/Chicago"` | Timezone for times |
-| `action` | string | `"REJECT_ORDER"` | Enforcement action |
+| `action` | string | `"CANCEL_ORDER"` | Enforcement action (cancels orders reactively) |
 
 **Time Format:** `"HH:MM"` (24-hour format)
 
@@ -452,9 +484,10 @@ auth_loss_guard:
 symbol_blocks:
   enabled: true
   blocked_symbols:            # List of blocked symbols
-    - "MES"
-    - "M2K"
-  action: "REJECT_ORDER"
+    - "RTY"     # Russell 2000
+    - "BTC"     # Bitcoin futures
+  action: "CANCEL_ORDER"      # Cancel orders in blocked symbols
+  close_existing: true        # Also close any existing positions
 ```
 
 **Fields:**
@@ -462,9 +495,10 @@ symbol_blocks:
 |-------|------|---------|-------------|
 | `enabled` | bool | `true` | Enable/disable rule |
 | `blocked_symbols` | array | `[]` | List of blocked symbol IDs |
-| `action` | string | `"REJECT_ORDER"` | Enforcement action |
+| `action` | string | `"CANCEL_ORDER"` | Enforcement action (reactively cancels orders) |
+| `close_existing` | bool | `true` | Whether to close existing positions in blocked symbols |
 
-**Symbol Format:** TopstepX symbol ID (e.g., "MES", "MNQ", "M2K")
+**Symbol Format:** Symbol root (e.g., "RTY", "MNQ", "BTC" - extracted from contract ID)
 
 **Validation:**
 - `blocked_symbols` must be array of strings
@@ -519,8 +553,13 @@ rules:
 
   max_contracts_per_instrument:
     enabled: true
-    limit: 3
-    per_symbol: true
+    limits:
+      MNQ: 2
+      NQ: 1
+      ES: 1
+      MES: 3
+    enforcement: "reduce_to_limit"
+    unknown_symbol_action: "allow_with_limit:1"
 
   daily_realized_loss:
     enabled: true
@@ -531,12 +570,16 @@ rules:
   daily_unrealized_loss:
     enabled: true
     loss_limit: 300.00
-    action: "CLOSE_ALL_AND_LOCKOUT"
+    scope: "per_position"
+    action: "CLOSE_POSITION"
+    lockout: false
 
   max_unrealized_profit:
     enabled: true
+    mode: "profit_target"
     profit_target: 1000.00
-    action: "CLOSE_ALL_POSITIONS"
+    scope: "per_position"
+    action: "CLOSE_POSITION"
 
   trade_frequency_limit:
     enabled: true
@@ -551,7 +594,7 @@ rules:
   no_stop_loss_grace:
     enabled: true
     grace_period_seconds: 30
-    action: "CLOSE_ALL_POSITIONS"
+    action: "CLOSE_POSITION"
 
   session_block_outside:
     enabled: true
@@ -559,7 +602,7 @@ rules:
       start: "08:30"
       end: "15:00"
     timezone: "America/Chicago"
-    action: "REJECT_ORDER"
+    action: "CANCEL_ORDER"
 
   auth_loss_guard:
     enabled: true
@@ -568,9 +611,10 @@ rules:
   symbol_blocks:
     enabled: true
     blocked_symbols:
-      - "MES"
-      - "M2K"
-    action: "REJECT_ORDER"
+      - "RTY"
+      - "BTC"
+    action: "CANCEL_ORDER"
+    close_existing: true
 
   trade_management:
     enabled: false            # Test carefully before enabling!

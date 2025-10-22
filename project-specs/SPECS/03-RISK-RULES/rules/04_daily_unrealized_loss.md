@@ -17,12 +17,33 @@ enforcement_type: Hard Lockout (Until Reset)
 ```yaml
 daily_unrealized_loss:
   enabled: true
-  limit: -300               # Max floating loss (negative value)
-  reset_time: "17:00"       # Daily reset time (5:00 PM)
-  timezone: "America/New_York"
-  enforcement: "close_all_and_lockout"
-  lockout_until_reset: true
-  check_interval_seconds: 1  # How often to recalculate (every second)
+  loss_limit: 300.00        # Max unrealized loss (positive value in $)
+  scope: "per_position"     # "total" or "per_position"
+  action: "CLOSE_POSITION"  # "CLOSE_POSITION" or "CLOSE_ALL_AND_LOCKOUT"
+  lockout: false            # Whether to lock account (only with scope="total")
+```
+
+**Configuration Modes:**
+
+**Mode 1: Per-Position Stop-Loss** (Recommended)
+```yaml
+daily_unrealized_loss:
+  enabled: true
+  loss_limit: 300.00
+  scope: "per_position"     # Monitor each position individually
+  action: "CLOSE_POSITION"  # Close only the losing position
+  lockout: false            # No lockout
+```
+
+**Mode 2: Total Account Unrealized Loss** (Legacy)
+```yaml
+daily_unrealized_loss:
+  enabled: true
+  loss_limit: 300.00
+  scope: "total"            # Monitor total unrealized P&L
+  action: "CLOSE_ALL_AND_LOCKOUT"  # Close all + lockout
+  lockout: true
+  lockout_until: "daily_reset"  # or "permanent"
 ```
 
 ---
