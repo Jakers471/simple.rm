@@ -1,0 +1,24 @@
+# Risk Manager Logging Dependencies
+#
+# Core dependencies for production logging system
+
+# YAML configuration support
+PyYAML>=6.0.1
+
+# No additional dependencies required!
+# The logging system uses only Python standard library:
+# - logging
+# - json
+# - pathlib
+# - contextvars
+# - threading
+# - time
+# - functools
+# - contextlib
+
+# Optional: For enhanced console colors
+# colorama>=0.4.6  # Windows color support
+
+# Development dependencies
+# pytest>=7.4.0  # For running tests
+# pytest-cov>=4.1.0  # For coverage reports

@@ -1,0 +1,44 @@
+================================================================================
+RISK MANAGER LOGGING - FILE PATHS REFERENCE
+================================================================================
+
+CORE IMPLEMENTATION
+-------------------
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/__init__.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/__init__.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/config.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/context.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/formatters.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/performance.py
+
+DOCUMENTATION
+-------------
+/mnt/c/Users/jakers/Desktop/simple risk manager/LOGGING_IMPLEMENTATION.md
+/mnt/c/Users/jakers/Desktop/simple risk manager/LOGGING_QUICK_START.md
+/mnt/c/Users/jakers/Desktop/simple risk manager/LOGGING_CHEAT_SHEET.md
+/mnt/c/Users/jakers/Desktop/simple risk manager/LOGGING_FILES_SUMMARY.txt
+/mnt/c/Users/jakers/Desktop/simple risk manager/LOGGING_FILE_PATHS.txt
+/mnt/c/Users/jakers/Desktop/simple risk manager/src/risk_manager/logging/README.md
+
+CONFIGURATION
+-------------
+/mnt/c/Users/jakers/Desktop/simple risk manager/config/logging.yaml
+/mnt/c/Users/jakers/Desktop/simple risk manager/requirements-logging.txt
+
+EXAMPLES
+--------
+/mnt/c/Users/jakers/Desktop/simple risk manager/examples/logging_examples.py
+/mnt/c/Users/jakers/Desktop/simple risk manager/examples/daemon_example.py
+
+TESTS
+-----
+/mnt/c/Users/jakers/Desktop/simple risk manager/tests/test_logging.py
+
+LOG OUTPUT (created at runtime)
+--------------------------------
+/mnt/c/Users/jakers/Desktop/simple risk manager/logs/daemon.log
+/mnt/c/Users/jakers/Desktop/simple risk manager/logs/enforcement.log
+/mnt/c/Users/jakers/Desktop/simple risk manager/logs/api.log
+/mnt/c/Users/jakers/Desktop/simple risk manager/logs/error.log
+
+================================================================================

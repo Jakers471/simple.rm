@@ -1,0 +1,89 @@
+# Risk Manager Logging Configuration
+#
+# This file controls logging behavior for the Risk Manager daemon.
+# Modify settings here and restart the daemon to apply changes.
+
+# Log directory (relative to project root or absolute path)
+log_dir: "logs"
+
+# Global log level
+# Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level: "INFO"
+
+# Enable console output (useful for development)
+enable_console: true
+
+# Enable JSON structured logging
+# Set to false for human-readable logs (development)
+# Set to true for structured logs (production)
+enable_json: true
+
+# Log rotation settings
+rotation:
+  # Maximum size per log file (in MB)
+  max_mb: 10
+
+  # Number of backup files to keep (days)
+  backup_count: 7
+
+  # Compress old log files
+  compress: true
+
+# Specialized log files
+log_files:
+  daemon:
+    enabled: true
+    filename: "daemon.log"
+    level: "DEBUG"
+    description: "All daemon activity and operations"
+
+  enforcement:
+    enabled: true
+    filename: "enforcement.log"
+    level: "INFO"
+    description: "Rule breaches and enforcement actions"
+
+  api:
+    enabled: true
+    filename: "api.log"
+    level: "DEBUG"
+    description: "TopstepX API calls and responses"
+
+  error:
+    enabled: true
+    filename: "error.log"
+    level: "ERROR"
+    description: "Errors and exceptions only"
+
+# Performance logging
+performance:
+  enabled: true
+  # Log operations slower than threshold (milliseconds)
+  threshold_ms: 100
+  # Include performance metrics in logs
+  include_metrics: true
+
+# Context tracking
+context:
+  # Enable correlation IDs
+  correlation_ids: true
+  # Auto-generate correlation IDs if not provided
+  auto_generate: true
+
+# Security
+security:
+  # Mask sensitive data in logs
+  mask_sensitive: true
+  # Additional patterns to mask (regex)
+  additional_patterns: []
+  # Mask email addresses
+  mask_emails: true
+
+# Development settings (disable in production)
+development:
+  # Use colored console output
+  colored_console: true
+  # Include full stack traces
+  full_traces: true
+  # Log to console as well as files
+  console_duplicate: true
