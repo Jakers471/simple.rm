@@ -1,0 +1,17 @@
+# Config directory .gitignore
+# Prevent committing sensitive files
+
+# NEVER commit actual account credentials
+accounts.yaml
+
+# NEVER commit admin password
+admin_password.hash
+
+# Allow templates and examples
+!*.template
+!*.example
+!*.sample
+
+# Allow configuration schemas
+!risk_config.yaml
+!logging.yaml

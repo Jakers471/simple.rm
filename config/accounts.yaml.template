@@ -1,0 +1,74 @@
+# accounts.yaml.template
+# TopstepX Account Configuration Template
+#
+# INSTRUCTIONS:
+# 1. Copy this file to accounts.yaml
+# 2. Fill in your TopstepX account credentials
+# 3. DO NOT commit accounts.yaml to git (it contains secrets)
+#
+# Last Updated: 2025-10-23
+
+accounts:
+  # Primary trading account
+  - account_id: 123456                    # Your TopstepX account ID
+    enabled: true                         # Set to false to disable monitoring
+    api_credentials:
+      # TopstepX REST API credentials
+      api_key: "YOUR_API_KEY_HERE"        # Get from TopstepX dashboard
+      api_secret: "YOUR_API_SECRET_HERE"  # Get from TopstepX dashboard
+
+      # Authentication
+      username: "your_username"           # TopstepX login username
+      password: "your_password"           # TopstepX login password
+
+    # Account-specific settings
+    settings:
+      # Daily reset time (when P&L resets)
+      reset_time: "17:00"                 # 5:00 PM Central Time
+      timezone: "America/Chicago"         # IANA timezone
+
+      # Monitoring settings
+      enable_signalr: true                # Enable real-time event monitoring
+      enable_rest_polling: false          # Enable REST API polling (backup)
+
+    # Optional: Per-account rule overrides
+    # Uncomment to override global risk_config.yaml for this account
+    # rule_overrides:
+    #   max_contracts:
+    #     limit: 3                        # Override: Max 3 contracts for this account
+    #   daily_realized_loss:
+    #     loss_limit: 250.00              # Override: Lower loss limit
+
+  # Secondary account (example)
+  # - account_id: 789012
+  #   enabled: false                      # Disabled by default
+  #   api_credentials:
+  #     api_key: "SECOND_ACCOUNT_API_KEY"
+  #     api_secret: "SECOND_ACCOUNT_API_SECRET"
+  #     username: "second_account_username"
+  #     password: "second_account_password"
+  #   settings:
+  #     reset_time: "17:00"
+  #     timezone: "America/Chicago"
+  #     enable_signalr: true
+  #     enable_rest_polling: false
+
+# Global account settings (applied to all accounts unless overridden)
+global_settings:
+  # Connection settings
+  connection_timeout: 30                  # Seconds
+  max_reconnect_attempts: 5
+  reconnect_delay: 10                     # Seconds between reconnects
+
+  # Polling settings (if enable_rest_polling is true)
+  poll_interval: 5                        # Seconds between REST API polls
+
+  # Logging
+  log_api_calls: false                    # Log all API requests/responses (verbose)
+  log_events: true                        # Log all SignalR events
+
+# Security notes:
+# - Keep this file secure! It contains account credentials
+# - Never commit accounts.yaml to git
+# - Use environment variables for production deployments
+# - Rotate API keys regularly

@@ -1,0 +1,109 @@
+# risk_config.yaml
+# Risk Rule Configurations for Simple Risk Manager
+# Last Updated: 2025-10-23
+
+# Global settings
+global:
+  strict_mode: false        # Normal mode - use per-rule enforcement
+  logging_level: "INFO"     # DEBUG, INFO, WARNING, ERROR
+
+# Rule configurations
+rules:
+  # RULE-001: Max Contracts
+  # Limit total net contracts across all instruments
+  max_contracts:
+    enabled: true
+    limit: 5
+    count_type: "net"       # "net" or "gross"
+
+  # RULE-002: Max Contracts Per Instrument
+  # Limit contracts per individual instrument
+  max_contracts_per_instrument:
+    enabled: true
+    limits:
+      MNQ: 2    # Max 2 micro NQ contracts
+      NQ: 1     # Max 1 full NQ contract
+      ES: 1     # Max 1 ES contract
+      MES: 3    # Max 3 micro ES contracts
+    enforcement: "reduce_to_limit"  # "reduce_to_limit" or "close_all"
+    unknown_symbol_action: "allow_with_limit:1"  # Default limit for unlisted symbols
+
+  # RULE-003: Daily Realized Loss
+  # Limit daily realized loss (P&L from closed trades)
+  daily_realized_loss:
+    enabled: true
+    loss_limit: 500.00
+    action: "CLOSE_ALL_AND_LOCKOUT"
+    lockout_until: "daily_reset"  # or "permanent"
+
+  # RULE-004: Daily Unrealized Loss
+  # Limit unrealized loss per position (per-trade stop-loss)
+  daily_unrealized_loss:
+    enabled: true
+    loss_limit: 300.00
+    scope: "per_position"         # "total" or "per_position"
+    action: "CLOSE_POSITION"      # Close only losing position
+    lockout: false                # No lockout on per-position mode
+
+  # RULE-005: Max Unrealized Profit
+  # Auto-close positions at profit target or breakeven
+  max_unrealized_profit:
+    enabled: true
+    mode: "profit_target"         # "profit_target" or "breakeven"
+    profit_target: 1000.00        # Used when mode = "profit_target"
+    scope: "per_position"         # Close each position individually
+    action: "CLOSE_POSITION"      # Close only profitable position
+
+  # RULE-006: Trade Frequency Limit
+  # Limit number of trades in time window
+  trade_frequency_limit:
+    enabled: true
+    max_trades: 30
+    time_window_minutes: 60
+
+  # RULE-007: Cooldown After Loss
+  # Enforce cooldown period after losing trade
+  cooldown_after_loss:
+    enabled: true
+    loss_threshold: 100.00
+    cooldown_seconds: 300
+
+  # RULE-008: No Stop-Loss Grace Period
+  # Require stop-loss on all positions within grace period
+  no_stop_loss_grace:
+    enabled: true
+    grace_period_seconds: 30
+    action: "CLOSE_POSITION"      # Close only position without stop-loss
+
+  # RULE-009: Session Block Outside Hours
+  # Block trading outside allowed hours
+  session_block_outside:
+    enabled: true
+    allowed_hours:
+      start: "08:30"
+      end: "15:00"
+    timezone: "America/Chicago"
+    action: "CANCEL_ORDER"        # Cancel orders outside allowed hours
+
+  # RULE-010: Auth Loss Guard
+  # Detect and prevent authentication bypass attempts
+  auth_loss_guard:
+    enabled: true
+    action: "CLOSE_ALL_AND_LOCKOUT"
+
+  # RULE-011: Symbol Blocks
+  # Block trading specific instruments
+  symbol_blocks:
+    enabled: true
+    blocked_symbols:
+      - "RTY"   # Russell 2000
+      - "BTC"   # Bitcoin futures
+    action: "CANCEL_ORDER"        # Cancel orders in blocked symbols
+    close_existing: true          # Also close any existing positions
+
+  # RULE-012: Trade Management
+  # Automatically place stop-loss orders
+  trade_management:
+    enabled: false            # Disabled by default - test carefully before enabling!
+    auto_stop_loss: true
+    stop_loss_ticks: 10

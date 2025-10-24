@@ -1,15 +1,44 @@
 """Position test fixtures for pytest
 
 Provides various position scenarios for testing risk rules.
-All fixtures return Position-compatible dictionaries.
+
+IMPORTANT: This file contains two types of fixtures:
+1. API response fixtures (camelCase) - Mock TopstepX API responses
+2. Internal format fixtures (snake_case) - For internal processing/testing
+
+Use API response fixtures when testing API clients/parsers.
+Use internal format fixtures when testing core logic that expects converted data.
 """
 import pytest
 from datetime import datetime, timezone
 
 
+# ============================================================================
+# API RESPONSE FIXTURES (TopstepX API Format - camelCase)
+# ============================================================================
+
+@pytest.fixture
+def single_es_long_position_api():
+    """Single ES long position - API response format (camelCase)"""
+    return {
+        "id": 12345,
+        "accountId": 123,
+        "contractId": "CON.F.US.ES.H25",
+        "type": 1,  # LONG
+        "size": 1,
+        "averagePrice": 4500.00,
+        "createdAt": "2025-01-17T14:30:00Z",
+        "updatedAt": "2025-01-17T14:30:00Z"
+    }
+
+
+# ============================================================================
+# INTERNAL FORMAT FIXTURES (snake_case - for core logic)
+# ============================================================================
+
 @pytest.fixture
 def single_es_long_position():
-    """Single ES long position (1 contract at 4500.00)"""
+    """Single ES long position (1 contract at 4500.00) - Internal format"""
     return {
         "id": 12345,
         "account_id": 123,
@@ -23,8 +52,23 @@ def single_es_long_position():
 
 
 @pytest.fixture
+def single_nq_short_position_api():
+    """Single NQ short position - API response format (camelCase)"""
+    return {
+        "id": 12346,
+        "accountId": 123,
+        "contractId": "CON.F.US.NQ.H25",
+        "type": 2,  # SHORT
+        "size": 1,
+        "averagePrice": 16000.00,
+        "createdAt": "2025-01-17T14:35:00Z",
+        "updatedAt": "2025-01-17T14:35:00Z"
+    }
+
+
+@pytest.fixture
 def single_nq_short_position():
-    """Single NQ short position (1 contract at 16000.00)"""
+    """Single NQ short position (1 contract at 16000.00) - Internal format"""
     return {
         "id": 12346,
         "account_id": 123,
@@ -38,8 +82,35 @@ def single_nq_short_position():
 
 
 @pytest.fixture
+def two_open_positions_mixed_api():
+    """Two open positions - API response format (camelCase)"""
+    return [
+        {
+            "id": 12345,
+            "accountId": 123,
+            "contractId": "CON.F.US.ES.H25",
+            "type": 1,  # LONG
+            "size": 2,
+            "averagePrice": 4500.00,
+            "createdAt": "2025-01-17T14:30:00Z",
+            "updatedAt": "2025-01-17T14:30:00Z"
+        },
+        {
+            "id": 12346,
+            "accountId": 123,
+            "contractId": "CON.F.US.NQ.H25",
+            "type": 2,  # SHORT
+            "size": 1,
+            "averagePrice": 16000.00,
+            "createdAt": "2025-01-17T14:35:00Z",
+            "updatedAt": "2025-01-17T14:35:00Z"
+        }
+    ]
+
+
+@pytest.fixture
 def two_open_positions_mixed():
-    """Two open positions: ES long (2 contracts), NQ short (1 contract)"""
+    """Two open positions: ES long (2 contracts), NQ short (1 contract) - Internal format"""
     return [
         {
             "id": 12345,

@@ -46,6 +46,7 @@ class TestSessionBlockOutsideHours:
 
         # When
         from src.rules.session_block_outside_hours import SessionBlockOutsideHoursRule
+        mock_lockout_manager.is_locked_out.return_value = False
         rule = SessionBlockOutsideHoursRule(config, mock_lockout_manager)
 
         with patch('datetime.datetime') as mock_datetime:
@@ -211,10 +212,10 @@ class TestSessionBlockOutsideHours:
 
         # When
         from src.rules.session_block_outside_hours import SessionBlockOutsideHoursRule
-        from src.utils.symbol_utils import extract_symbol_from_contract
+        from src.utils.symbol_utils import extract_symbol_root
 
         rule = SessionBlockOutsideHoursRule(config, mock_lockout_manager)
-        symbol = extract_symbol_from_contract(position_event['contractId'])
+        symbol = extract_symbol_root(position_event['contractId'])
 
         with patch('datetime.datetime') as mock_datetime:
             mock_datetime.now.return_value = mock_now

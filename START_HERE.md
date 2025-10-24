@@ -1,199 +1,255 @@
-# 🎯 Risk Manager Project - Start Here
+# 🚀 START HERE - Quick Orientation
 
-**Project Status:** Design & Specification Phase
-**AI-First Development:** Building specs for AI agents to implement
-
----
-
-## 🗺️ Project Organization
-
-```
-simple risk manager/
-│
-├── 📐 project-specs/              ← AI SPECIFICATIONS (YOUR MAIN FOCUS)
-│   ├── AI_CONTEXT.md              ← 🔴 AI AGENTS: READ THIS FIRST!
-│   ├── SPECS/                     ← Organized specifications
-│   │   ├── 00-CORE-CONCEPT/       ✅ Architecture & overview
-│   │   ├── 01-EXTERNAL-API/       ✅ TopstepX API docs
-│   │   ├── 02-BACKEND-DAEMON/     ⏳ Daemon specs (TODO)
-│   │   ├── 03-RISK-RULES/         ✅ All 12 risk rules
-│   │   ├── 04-CORE-MODULES/       ✅ 4 core modules
-│   │   ├── 05-INTERNAL-API/       🔴 CRITICAL - Decision needed
-│   │   ├── 06-CLI-FRONTEND/       ⏳ UI specs (TODO)
-│   │   ├── 07-DATA-MODELS/        ⏳ Data structures (TODO)
-│   │   ├── 08-CONFIGURATION/      ⏳ Config specs (TODO)
-│   │   └── 99-IMPLEMENTATION-GUIDES/ (Future)
-│   ├── PROJECT_DOCS/              ← Original documentation
-│   └── TEMPLATES/                 ← Code templates (future)
-│
-├── 📂 sdk/                        ← Claude Flow SDK (isolated)
-│   ├── .claude/                   ← Agents & commands
-│   ├── .claude-flow/              ← Metrics
-│   ├── coordination/              ← Orchestration
-│   ├── memory/                    ← Agent memory
-│   └── node_modules/              ← SDK dependencies
-│
-├── 💼 YOUR RISK MANAGER PROJECT:
-│   ├── src/                       ← Source code (empty - ready to build)
-│   ├── config/                    ← Config files (empty)
-│   ├── scripts/                   ← Utility scripts (empty)
-│   ├── tests/                     ← Tests (empty)
-│   │
-│   ├── examples/                  ← CLI/GUI examples
-│   │   ├── cli/trader/            ← Trader CLI examples
-│   │   ├── cli/admin/             ← Admin CLI examples
-│   │   ├── gui/                   ← GUI examples
-│   │   └── web/                   ← Web examples
-│   │
-│   ├── risk-manager-docs/         ← Your documentation
-│   ├── references/                ← Reference materials
-│   ├── reports/                   ← Project reports
-│   └── user.reference.md/         ← User references
-│
-└── 📦 Project Files:
-    ├── package.json               ← NPM config
-    └── .gitignore                 ← Git ignore rules
-```
+**Last Updated:** 2025-10-23
+**Current Phase:** Phase 1 - Make It Work (Console Mode)
+**Completion:** 25% overall
 
 ---
 
-## 🚀 Quick Start Guide
+## 📍 WHERE WE ARE RIGHT NOW
 
-### For AI Agents (Claude Code, etc.):
+**Status:** We have library code (modules, rules, API layer) but **NO RUNNABLE APPLICATION**.
+
+Think of it like: We have car parts that work individually, but no assembled car you can drive.
+
+---
+
+## 🎯 WHAT EXISTS (The Parts)
+
+✅ **Core Modules** (9 files, 2,250 lines)
+- Location: `src/core/`
+- Status: Coded, unit tested with mocks
+- Missing: Integration into daemon
+
+✅ **Risk Rules** (12 files, 2,407 lines)
+- Location: `src/rules/`
+- Status: Coded, 77/78 tests passing
+- Missing: Integration into event pipeline
+
+✅ **API Layer** (9 files, 3,671 lines)
+- Location: `src/api/`
+- Status: Coded, tests need alignment
+- Missing: Real API connection testing
+
+✅ **Test Infrastructure**
+- Location: `tests/`
+- Status: 196 test scenarios, 143/144 passing
+- Missing: Integration tests, E2E tests
+
+✅ **Specifications** (100 files)
+- Location: `project-specs/SPECS/`
+- Status: Complete architecture docs
+
+---
+
+## ❌ WHAT'S MISSING (Critical Gaps)
+
+**NO RUNNABLE APPLICATION:**
+- ❌ `src/core/daemon.py` - Main application
+- ❌ `src/core/event_router.py` - Event processing pipeline
+- ❌ `src/cli/admin_cli.py` - Admin interface
+- ❌ `src/cli/trader_cli.py` - Trader dashboard
+- ❌ `src/service/windows_service.py` - Windows Service wrapper
+
+**NO DATABASE:**
+- ❌ `data/state.db` - Database file doesn't exist
+- ❌ Schema never initialized
+
+**NO CONFIGURATION:**
+- ❌ `config/risk_config.yaml` - Main config (12 rule settings)
+- ❌ `config/accounts.yaml` - Account credentials
+- ✅ `config/logging.yaml` - Only this exists
+
+**NO INTEGRATION:**
+- ❌ Never connected to real TopstepX API
+- ❌ Never processed real events
+- ❌ Never enforced rules on real data
+
+---
+
+## 📚 FILES TO READ FOR CONTEXT
+
+**⚡ FOR AI ASSISTANTS: Read `docs/AI_ONBOARDING.md` first! ⚡**
+
+**When an AI asks "where did we leave off", read these in order:**
+
+### 1. Current Status (Read First)
 ```
-1. Read: project-specs/AI_CONTEXT.md
-   ↳ Tells you project status, what's done, what's needed
-
-2. Navigate to: project-specs/SPECS/
-   ↳ See SPECS/README.md for navigation
-
-3. Check for _TODO.md files:
-   ↳ These show what needs design work
-
-4. Ready to implement?
-   ↳ Only if no _TODO.md in relevant folder
-```
-
-### For You (Project Owner):
-```
-1. Current Phase: Designing specs
-2. Next Critical Decision: Internal API protocol
-   ↳ See: project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md
-   ↳ Choose: HTTP API, Named Pipes, or SQLite?
-
-3. Continue working with agents to:
-   ↳ Complete missing specs (02, 05, 06, 07, 08)
-   ↳ Make design decisions
-   ↳ Document everything for AI implementation
+docs/AI_ONBOARDING.md                  ← Quick AI onboarding (5 min)
+START_HERE.md                          ← You are here
+docs/ACTUAL_STATUS_2025-10-23.md       ← Honest assessment
+docs/PHASE_1_BUILD_PLAN.md             ← Current phase details
+docs/PHASE_2_BUILD_PLAN.md             ← Next phase
+docs/PHASE_3_BUILD_PLAN.md             ← Final phase
 ```
 
----
+### 2. Implementation Context
+```
+src/core/                              ← Existing modules (what works)
+src/rules/                             ← Existing rules (what works)
+src/api/                               ← Existing API layer (what works)
+tests/                                 ← Test suite (what's tested)
+```
 
-## 🎯 Current Status
+### 3. Specifications (What to Build)
+```
+project-specs/SPECS/02-BACKEND-DAEMON/
+  ├── DAEMON_ARCHITECTURE.md           ← How daemon should work
+  ├── EVENT_PIPELINE.md                ← Event routing logic
+  └── STATE_MANAGEMENT.md              ← State updates
 
-### ✅ Complete Specs (Ready for AI Implementation):
-- **Architecture** - Complete system design (ARCH-V2)
-- **Risk Rules** - All 12 rules fully specified
-- **Core Modules** - All 4 modules fully specified
-- **External API** - TopstepX integration documented
+project-specs/SPECS/06-CLI-FRONTEND/
+  ├── ADMIN_CLI_SPEC.md                ← Admin interface design
+  └── TRADER_CLI_SPEC.md               ← Trader dashboard design
 
-### ⏳ Incomplete Specs (Need Design Work):
-- **Backend Daemon** - How daemon works internally
-- **Internal API** - 🔴 CRITICAL - How CLI talks to daemon
-- **CLI Frontend** - User interface specifications
-- **Data Models** - Exact data structures
-- **Configuration** - Complete config file specs
+project-specs/SPECS/07-DATA-MODELS/
+  └── DATABASE_SCHEMA.md               ← Database structure (9 tables)
 
-### 🚫 Future Work (Don't Start Yet):
-- Implementation guides
-- Code templates
-- Actual code implementation
-- Testing
+project-specs/SPECS/08-CONFIGURATION/
+  ├── RISK_CONFIG_YAML_SPEC.md         ← Risk rules config format
+  └── LOGGING_CONFIG_SPEC.md           ← Logging setup
+```
 
----
-
-## 📋 Next Steps
-
-**Immediate Priorities:**
-
-1. **Make Critical Decision** (BLOCKING):
-   - Read: `project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md`
-   - Choose communication protocol
-   - This unblocks CLI and daemon implementation
-
-2. **Complete Data Models**:
-   - Work with AI to define exact Python dataclasses
-   - Define SQLite database schema
-   - Document API response formats
-
-3. **Define CLI Specifications**:
-   - What screens does trader CLI have?
-   - What screens does admin CLI have?
-   - What UI library to use?
-
-4. **Complete Config Specs**:
-   - Full YAML specification
-   - Validation rules
-   - Example configs
-
-**Then:** Start implementation with AI agents
+### 4. Test Status
+```
+tests/unit/                            ← Unit tests (143/144 passing)
+tests/conftest.py                      ← Pytest configuration
+venv/                                  ← Virtual environment (exists)
+```
 
 ---
 
-## 🔑 Key Files for AI
+## 🎯 CURRENT OBJECTIVE
 
-**Start Here:**
-- `project-specs/AI_CONTEXT.md` - AI agent entry point
+**Phase 1: Make It Work (Console Mode)**
 
-**Architecture:**
-- `project-specs/SPECS/00-CORE-CONCEPT/architecture/system_architecture_v2.md`
+**Goal:** Create runnable daemon that monitors TopstepX and enforces rules.
 
-**Critical Missing Piece:**
-- `project-specs/SPECS/05-INTERNAL-API/COMMUNICATION_PROTOCOL.md`
+**See:** `docs/PHASE_1_BUILD_PLAN.md` for detailed tasks
 
-**All Specs Navigation:**
-- `project-specs/SPECS/README.md`
+**Estimated Time:** 3-5 days (32-42 hours)
 
 ---
 
-## 💡 Philosophy
+## 🚦 QUICK STATUS CHECK COMMANDS
 
-This is an **AI-first project**:
-- Specs are written FOR AI agents to implement
-- Precision over prose
-- Complete specifications enable autonomous implementation
-- Human makes decisions, AI executes
-
-**Current Goal:** Get specs 100% complete so AI can build the system autonomously.
-
----
-
-## 📞 Quick Reference
-
-**To work on specs:**
 ```bash
-cd project-specs/SPECS/
-# Find _TODO.md files
-# Work with AI to complete them
-```
+# Check if virtual environment active
+which python
+# Should show: .../simple risk manager/venv/bin/python
 
-**To see what's already defined:**
-```bash
-cd project-specs/PROJECT_DOCS/
-# Original documentation lives here
-# Linked into SPECS/ for organization
-```
+# Run existing tests
+cd "/home/jakers/projects/simple-risk-manager/simple risk manager"
+source venv/bin/activate
+python -m pytest tests/unit/ -v
 
-**To view examples:**
-```bash
-cd examples/
-# CLI and GUI examples for inspiration
+# Check what's built
+ls -la src/core/        # Modules exist
+ls -la src/rules/       # Rules exist
+ls -la src/cli/         # Empty (needs building)
+ls -la data/            # Empty or missing (needs database)
+ls -la config/          # Only logging.yaml
 ```
 
 ---
 
-**Last Updated:** 2025-01-21
-**Current Phase:** Design & Specification
-**Next Milestone:** Complete all SPECS/ sections, then begin implementation
+## 📋 IMMEDIATE NEXT STEPS
 
-🤖 **AI Agents:** Read `project-specs/AI_CONTEXT.md` first!
+**Right Now (Next 2 Hours):**
+
+1. ✅ Fix 1 failing test (5 min)
+2. ✅ Create database (30 min)
+3. ✅ Create config files (1 hour)
+
+**See details in:** `docs/PHASE_1_BUILD_PLAN.md`
+
+---
+
+## 🗺️ OVERALL ROADMAP
+
+**Phase 1:** Make It Work (Console Mode) - 3-5 days
+- Build daemon, event router, database, configs
+- Get it running in console mode
+- Test with real TopstepX API
+
+**Phase 2:** Make It Production (Service + CLIs) - 3-5 days
+- Windows Service wrapper
+- Admin CLI (service control, config management)
+- Trader CLI (real-time dashboard)
+
+**Phase 3:** Deploy & Polish - 2-3 days
+- Production testing
+- Monitoring setup
+- Deployment
+- Documentation
+
+**Total Timeline:** 2-3 weeks
+
+---
+
+## 💡 IMPORTANT NOTES FOR AI
+
+**When continuing work:**
+
+1. **Always check phase status:** Read current phase file first
+2. **Mark tasks complete:** Update phase files with ✅ as you finish
+3. **Update this file:** Change "Current Phase" when phase completes
+4. **Run tests frequently:** Verify nothing breaks
+5. **Never delete specs:** They're the source of truth
+
+**When stuck:**
+- Read the spec in `project-specs/SPECS/`
+- Check existing code in `src/` for patterns
+- Look at tests in `tests/` for examples
+
+---
+
+## 📁 PROJECT STRUCTURE
+
+```
+simple-risk-manager/
+├── START_HERE.md                    ← You are here
+├── docs/
+│   ├── ACTUAL_STATUS_2025-10-23.md ← Honest assessment
+│   ├── PHASE_1_BUILD_PLAN.md       ← Current phase
+│   ├── PHASE_2_BUILD_PLAN.md       ← Next phase
+│   └── PHASE_3_BUILD_PLAN.md       ← Final phase
+├── src/
+│   ├── core/                        ← Modules (exist)
+│   ├── rules/                       ← Rules (exist)
+│   ├── api/                         ← API layer (exists)
+│   ├── cli/                         ← CLIs (NEED TO BUILD)
+│   └── service/                     ← Service (NEED TO BUILD)
+├── tests/                           ← Test suite
+├── config/                          ← Configs (mostly missing)
+├── data/                            ← Database (missing)
+└── project-specs/SPECS/             ← Specifications (read these!)
+```
+
+---
+
+## 🎯 SUCCESS CRITERIA
+
+**Phase 1 Complete When:**
+- ✅ Database exists with schema
+- ✅ Config files created
+- ✅ Daemon runs in console mode
+- ✅ Connects to TopstepX API
+- ✅ Processes events
+- ✅ Enforces at least 1 rule
+
+**Phase 2 Complete When:**
+- ✅ Windows Service installed
+- ✅ Admin CLI works
+- ✅ Trader CLI works
+- ✅ All 12 rules tested
+
+**Phase 3 Complete When:**
+- ✅ Running in production
+- ✅ Monitoring configured
+- ✅ Documentation complete
+
+---
+
+**Last Updated:** 2025-10-23
+**Next Review:** After completing Phase 1 Task 1 (database creation)

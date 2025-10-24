@@ -7,7 +7,7 @@ to lock in gains and prevent giving back profits.
 
 import pytest
 from unittest.mock import Mock, patch
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 
 @pytest.fixture
@@ -31,6 +31,24 @@ def mock_lockout_manager():
 @pytest.fixture
 def mock_logger():
     """Mock logger for enforcement tracking."""
+    return Mock()
+
+
+@pytest.fixture
+def mock_state_manager():
+    """Mock state manager for positions."""
+    return Mock()
+
+
+@pytest.fixture
+def mock_contract_cache():
+    """Mock contract cache for contract details."""
+    return Mock()
+
+
+@pytest.fixture
+def mock_quote_tracker():
+    """Mock quote tracker for current prices."""
     return Mock()
 
 
@@ -97,9 +115,10 @@ class TestMaxUnrealizedProfit:
             mock_logger
         )
 
-        with patch('datetime.datetime') as mock_datetime:
+        with patch('src.rules.max_unrealized_profit.datetime') as mock_datetime:
             mock_datetime.now.return_value = mock_now
-            mock_datetime.combine = datetime.combine
+            mock_datetime.time = time
+            mock_datetime.timedelta = timedelta
 
             breach = rule.check_with_current_prices(123)
 
@@ -146,15 +165,20 @@ class TestMaxUnrealizedProfit:
         }
 
         mock_state_manager.get_all_positions.return_value = [{
-            'contract_id': 'CON.F.US.MNQ.U25',
+            'contractId': 'CON.F.US.MNQ.U25',
             'type': 1,  # Long
             'size': 2,
             'averagePrice': 21000.00
         }]
 
         # When
-        from src.state.pnl_tracker import PNLTracker
-        pnl_tracker = PNLTracker(mock_state_manager, mock_contract_cache, mock_quote_tracker)
+        from src.core.pnl_tracker import PnLTracker
+        pnl_tracker = PnLTracker(
+            db=None,
+            state_mgr=mock_state_manager,
+            quote_tracker=mock_quote_tracker,
+            contract_cache=mock_contract_cache
+        )
 
         from src.rules.max_unrealized_profit import MaxUnrealizedProfitRule
         rule = MaxUnrealizedProfitRule(config, pnl_tracker, mock_actions, None)
@@ -191,15 +215,20 @@ class TestMaxUnrealizedProfit:
         }
 
         mock_state_manager.get_all_positions.return_value = [{
-            'contract_id': 'CON.F.US.MNQ.U25',
+            'contractId': 'CON.F.US.MNQ.U25',
             'type': 2,  # Short
             'size': 2,
             'averagePrice': 21000.00
         }]
 
         # When
-        from src.state.pnl_tracker import PNLTracker
-        pnl_tracker = PNLTracker(mock_state_manager, mock_contract_cache, mock_quote_tracker)
+        from src.core.pnl_tracker import PnLTracker
+        pnl_tracker = PnLTracker(
+            db=None,
+            state_mgr=mock_state_manager,
+            quote_tracker=mock_quote_tracker,
+            contract_cache=mock_contract_cache
+        )
 
         from src.rules.max_unrealized_profit import MaxUnrealizedProfitRule
         rule = MaxUnrealizedProfitRule(config, pnl_tracker, mock_actions, None)

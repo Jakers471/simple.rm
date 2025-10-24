@@ -73,8 +73,10 @@ class StateManager:
         for order in orders:
             order_id = order['id']
 
-            # States: 1=Pending, 2=Working, 3=Filled, 4=Cancelled, 5=Rejected
-            if order.get('state') in [3, 4, 5]:
+            # OrderStatus enum: 0=None, 1=Open, 2=Filled, 3=Cancelled, 4=Expired, 5=Rejected, 6=Pending
+            # Terminal states (order won't change): Filled, Cancelled, Expired, Rejected
+            # Source: projectx_gateway_api/realtime_updates/realtime_data_overview.md
+            if order.get('status') in [2, 3, 4, 5]:  # FILLED, CANCELLED, EXPIRED, REJECTED
                 if order_id in self.orders[account_id]:
                     del self.orders[account_id][order_id]
                 if self.db:
@@ -89,17 +91,17 @@ class StateManager:
                     'size': order['size'],
                     'limitPrice': order.get('limitPrice'),
                     'stopPrice': order.get('stopPrice'),
-                    'state': order.get('state', 1),
+                    'status': order.get('status', 6),  # Default to PENDING if not specified
                     'creationTimestamp': order['creationTimestamp']
                 }
                 if self.db:
                     self.db.execute("""
                         INSERT OR REPLACE INTO orders
-                        (id, account_id, contract_id, type, side, size, limit_price, stop_price, state, created_at)
+                        (id, account_id, contract_id, type, side, size, limit_price, stop_price, status, created_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (order_id, account_id, order['contractId'], order['type'], order['side'],
                           order['size'], order.get('limitPrice'), order.get('stopPrice'),
-                          order.get('state', 1), order['creationTimestamp']))
+                          order.get('status', 6), order['creationTimestamp']))
 
     def update_order(self, order_event: Dict[str, Any]) -> None:
         """Update single order from GatewayUserOrder event."""
@@ -138,11 +140,11 @@ class StateManager:
             for order in account_orders.values():
                 self.db.execute("""
                     INSERT INTO orders
-                    (id, account_id, contract_id, type, side, size, limit_price, stop_price, state, created_at)
+                    (id, account_id, contract_id, type, side, size, limit_price, stop_price, status, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (order['id'], account_id, order['contractId'], order['type'], order['side'],
                       order['size'], order.get('limitPrice'), order.get('stopPrice'),
-                      order['state'], order['creationTimestamp']))
+                      order['status'], order['creationTimestamp']))
 
         if hasattr(self.db, 'commit'):
             self.db.commit()
@@ -171,12 +173,12 @@ class StateManager:
             }
 
         cursor = self.db.execute("""
-            SELECT id, account_id, contract_id, type, side, size, limit_price, stop_price, state, created_at
+            SELECT id, account_id, contract_id, type, side, size, limit_price, stop_price, status, created_at
             FROM orders
         """)
 
         for row in cursor.fetchall():
-            order_id, account_id, contract_id, type_, side, size, limit_price, stop_price, state, created_at = row
+            order_id, account_id, contract_id, type_, side, size, limit_price, stop_price, status, created_at = row
             if account_id not in self.orders:
                 self.orders[account_id] = {}
             self.orders[account_id][order_id] = {
@@ -188,7 +190,7 @@ class StateManager:
                 'size': size,
                 'limitPrice': limit_price,
                 'stopPrice': stop_price,
-                'state': state,
+                'status': status,
                 'creationTimestamp': created_at
             }
 

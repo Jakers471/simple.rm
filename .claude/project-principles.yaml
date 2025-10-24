@@ -1,0 +1,348 @@
+# Simple Risk Manager - Project Principles
+# SINGLE SOURCE OF TRUTH - All agents MUST read this before starting work
+
+project:
+  name: "simple-risk-manager"
+  type: "trading_risk_management"
+  criticality: "critical"  # Lives affect trader livelihoods
+  description: "Real-time risk management for TopstepX trading platform"
+
+## ======================
+## CORE PRINCIPLES
+## ======================
+
+principles:
+  # Financial Safety - HIGHEST PRIORITY
+  security:
+    level: "critical"
+    rationale: "Managing real trader accounts and enforcing financial risk limits"
+    requirements:
+      - "Zero tolerance for missed risk violations"
+      - "All risk rule changes require approval + audit log"
+      - "Database encryption for all trader data"
+      - "Secure API token storage (never plaintext)"
+      - "Defense in depth - multiple validation layers"
+    compliance:
+      - "Financial services data handling"
+      - "Audit trail for all enforcement actions"
+
+  # Speed is Critical - Risk rules must execute FAST
+  performance:
+    priority: "critical"
+    rationale: "Risk violations must be detected and enforced in real-time"
+    requirements:
+      - "Risk rule evaluation < 10ms (p99) - HARD LIMIT"
+      - "Order blocking < 50ms end-to-end"
+      - "Position updates < 5ms"
+      - "System must handle 10,000+ orders/second during peak"
+      - "99.99% uptime (traders depend on this)"
+    optimization_targets:
+      - "Hot path: check() methods in all risk rules"
+      - "Database queries must use indexes"
+      - "In-memory state for active positions"
+
+  # Code Quality - Zero Tolerance for Bugs
+  code_quality:
+    standards: "strict"
+    rationale: "Bugs can cost traders real money"
+    requirements:
+      - "100% test coverage for risk rules (MANDATORY)"
+      - "Type safety enforced (mypy strict mode)"
+      - "All enforcement actions must have tests"
+      - "Integration tests for TopstepX API/SignalR"
+      - "No code review exceptions"
+    enforcement:
+      - "CI/CD blocks merge if tests fail"
+      - "Coverage below 90% fails build"
+
+  # Testing Strategy
+  testing:
+    strategy: "test-driven-development"
+    coverage_target: 100  # Risk rules MUST be 100%
+    requirements:
+      - "Write tests BEFORE implementation (TDD)"
+      - "Unit tests for ALL 12 risk rules"
+      - "Integration tests for API client"
+      - "Integration tests for SignalR events"
+      - "E2E tests for complete trading flows"
+      - "Mock all external dependencies (TopstepX API)"
+    test_organization:
+      - "tests/unit/rules/ - One file per rule"
+      - "tests/integration/api/ - API tests"
+      - "tests/integration/signalr/ - SignalR tests"
+      - "tests/e2e/ - Complete workflows"
+      - "tests/fixtures/ - Shared test data"
+
+## ======================
+## ARCHITECTURE
+## ======================
+
+architecture:
+  style: "modular_monolith"
+  rationale: "Simple deployment, fast communication, easier debugging"
+
+  components:
+    core:
+      - "StateManager - Single source of truth for positions/orders"
+      - "PnLTracker - Real-time profit/loss calculations"
+      - "LockoutManager - Enforce trading restrictions"
+
+    rules:
+      pattern: "Check + Enforce separation"
+      location: "src/rules/"
+      naming: "One file per rule (e.g., daily_realized_loss.py)"
+
+    api:
+      client: "TopstepX REST API client"
+      realtime: "SignalR for live updates"
+      pattern: "Event-driven architecture"
+
+  database:
+    type: "sqlite"
+    rationale: "Single-trader desktop app, no multi-user concurrency"
+    schema:
+      - "accounts - Trader account config"
+      - "lockouts - Active trading restrictions"
+      - "enforcement_log - Audit trail"
+
+  dependencies:
+    external:
+      - "TopstepX REST API (trading operations)"
+      - "TopstepX SignalR (real-time events)"
+    frameworks:
+      - "Python 3.12+"
+      - "pytest - Testing"
+      - "aiohttp - Async HTTP"
+      - "signalrcore - Real-time events"
+
+## ======================
+## RISK RULES (12 Total)
+## ======================
+
+risk_rules:
+  enforcement_philosophy: "Fail-safe - block first, investigate later"
+
+  implemented_rules:
+    - id: "RULE-001"
+      name: "MaxContracts"
+      purpose: "Limit total position size across all instruments"
+      enforcement: "REDUCE_TO_LIMIT"
+
+    - id: "RULE-002"
+      name: "MaxContractsPerInstrument"
+      purpose: "Limit position size per symbol"
+      enforcement: "REDUCE_TO_LIMIT"
+
+    - id: "RULE-003"
+      name: "DailyRealizedLoss"
+      purpose: "Stop trading after hitting daily loss limit"
+      enforcement: "CLOSE_ALL_AND_LOCKOUT"
+
+    - id: "RULE-004"
+      name: "DailyUnrealizedLoss"
+      purpose: "Prevent excessive unrealized losses"
+      enforcement: "CLOSE_ALL_AND_LOCKOUT"
+
+    - id: "RULE-005"
+      name: "MaxUnrealizedProfit"
+      purpose: "Lock in profits at target threshold"
+      enforcement: "CLOSE_ALL_POSITIONS"
+
+    - id: "RULE-006"
+      name: "TradeFrequencyLimit"
+      purpose: "Prevent overtrading"
+      enforcement: "BLOCK_NEW_TRADES"
+
+    - id: "RULE-007"
+      name: "CooldownAfterLoss"
+      purpose: "Force break after significant loss"
+      enforcement: "TEMPORARY_LOCKOUT"
+
+    - id: "RULE-008"
+      name: "NoStopLossGrace"
+      purpose: "Require stop-loss orders within grace period"
+      enforcement: "CLOSE_POSITION"
+
+    - id: "RULE-009"
+      name: "SessionBlockOutsideHours"
+      purpose: "Restrict trading to allowed hours"
+      enforcement: "BLOCK_ALL_ACTIONS"
+
+    - id: "RULE-010"
+      name: "AuthLossGuard"
+      purpose: "Stop trading if API connection lost"
+      enforcement: "CLOSE_ALL_AND_LOCKOUT"
+
+    - id: "RULE-011"
+      name: "SymbolBlocks"
+      purpose: "Block trading specific instruments"
+      enforcement: "BLOCK_SYMBOL"
+
+    - id: "RULE-012"
+      name: "TradeManagement"
+      purpose: "Auto-place stop-loss and take-profit orders"
+      enforcement: "PLACE_PROTECTIVE_ORDERS"
+
+## ======================
+## DEVELOPMENT WORKFLOW
+## ======================
+
+development:
+  methodology: "SPARC + TDD"
+  version_control: "git"
+  branching: "main (production-ready)"
+
+  adding_new_risk_rule:
+    steps:
+      - "1. Specification: Define rule behavior, trigger conditions, enforcement"
+      - "2. Test Design: Write test scenarios (normal, edge cases, failures)"
+      - "3. Test Implementation: Write failing tests in tests/unit/rules/test_<rule>.py"
+      - "4. Implementation: Write minimum code to pass tests in src/rules/<rule>.py"
+      - "5. Integration: Add rule to configuration, test with TopstepX integration"
+      - "6. Validation: Run full test suite, verify 100% coverage"
+
+  ci_cd:
+    required_checks:
+      - "All tests passing (pytest)"
+      - "Coverage >= 90% overall, 100% for risk rules"
+      - "Type checking passes (mypy --strict)"
+      - "No linting errors (ruff)"
+      - "Integration tests pass"
+
+## ======================
+## AGENT INSTRUCTIONS
+## ======================
+
+agent_instructions:
+  # ALL agents must follow these
+
+  before_starting_any_task:
+    - "1. Read this file (.claude/project-principles.yaml)"
+    - "2. Read project specification from memory: memory_usage(retrieve, 'project-specification', 'project-knowledge')"
+    - "3. Check if technical design exists: memory_usage(retrieve, 'complete-technical-design', 'project-knowledge')"
+    - "4. Read relevant rule documentation: docs/rules/<rule-name>.md"
+
+  when_writing_risk_rules:
+    - "ALWAYS write tests first (TDD)"
+    - "ALWAYS achieve 100% coverage for risk rules"
+    - "check() method MUST return None if no breach, dict if breach"
+    - "enforce() method MUST use EnforcementActions (close_position, set_lockout, etc.)"
+    - "ALWAYS handle edge cases (None values, negative numbers, etc.)"
+    - "ALWAYS add logging (logger.info/warning/error)"
+    - "Performance: check() MUST complete in < 10ms"
+
+  when_testing:
+    - "Use fixtures from tests/fixtures/ (accounts, positions, orders, trades)"
+    - "Mock all external dependencies (TopstepX API, SignalR)"
+    - "Test normal cases AND edge cases AND failure cases"
+    - "Verify enforcement actions are called correctly"
+    - "Test with realistic data (from TopstepX examples)"
+
+  when_security_level_critical:
+    - "Validate ALL inputs (never trust API data)"
+    - "Sanitize ALL database writes"
+    - "Log ALL enforcement actions with timestamp + reason"
+    - "Encrypt sensitive data (API tokens, account credentials)"
+    - "Assume breach - defense in depth"
+
+  when_performance_priority_critical:
+    - "Profile check() methods if > 5ms"
+    - "Use in-memory caching for StateManager"
+    - "Minimize database queries in hot path"
+    - "Batch operations where possible"
+    - "Async/await for I/O operations"
+
+  memory_storage_pattern:
+    namespaces:
+      - "project-knowledge/ - Long-term project data (spec, design, decisions)"
+      - "coordination/ - Agent-to-agent communication (proposals, status)"
+      - "active-work/ - Current session tasks"
+      - "archive-YYYY-MM-DD/ - Historical data"
+
+    required_keys:
+      - "project-specification - Complete requirements"
+      - "architecture-consensus - Agreed-upon architecture"
+      - "complete-technical-design - Detailed design docs"
+      - "test-plan - What needs testing"
+
+## ======================
+## DECISION FRAMEWORK
+## ======================
+
+decision_making:
+  # When agents need to make choices
+
+  consensus_threshold: 0.67  # 67% agreement required
+
+  when_uncertain:
+    - "Spawn multiple agents to analyze"
+    - "Use consensus voting (67% threshold)"
+    - "Document rationale in memory"
+    - "Flag for human review if no consensus"
+
+  prioritization:
+    critical:
+      - "Risk rule correctness (money at stake)"
+      - "Performance (real-time requirements)"
+      - "Security (trader data protection)"
+
+    high:
+      - "Test coverage (prevent bugs)"
+      - "Code quality (maintainability)"
+      - "Documentation (knowledge sharing)"
+
+    medium:
+      - "Code style (consistency)"
+      - "Logging (debugging)"
+
+    low:
+      - "Comments (self-documenting code preferred)"
+      - "Optimization (only if profiled bottleneck)"
+
+## ======================
+## SUCCESS METRICS
+## ======================
+
+success_metrics:
+  correctness:
+    - "Zero false negatives (missed violations) in production"
+    - "< 0.1% false positives (incorrect blocks)"
+    - "100% test coverage on risk rules"
+
+  performance:
+    - "p99 risk check latency < 10ms"
+    - "p99 enforcement latency < 50ms"
+    - "99.99% uptime"
+
+  quality:
+    - "Zero critical bugs in production"
+    - "All tests passing (100%)"
+    - "Code review approval required"
+
+---
+
+# HOW TO USE THIS FILE
+
+## For Human Developers:
+1. Read this FIRST before starting any work
+2. Follow the principles strictly
+3. Update this file when project requirements change
+4. Use as reference for all architectural decisions
+
+## For AI Agents:
+1. Read this file at the start of EVERY task
+2. Store decisions in memory with rationale
+3. Follow the enforcement levels (critical > high > medium > low)
+4. When uncertain, flag for consensus or human review
+
+## For New Features:
+1. Specification agent interviews user
+2. Architecture agents read this file + spec
+3. Consensus on approach (67% threshold)
+4. Implementation follows TDD pattern
+5. Validation against these principles
+
+---
+
+Last Updated: 2025-10-24
+Version: 1.0.0

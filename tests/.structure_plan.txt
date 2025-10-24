@@ -1,0 +1,242 @@
+TEST STRUCTURE PLAN - Simple Risk Manager
+==========================================
+Generated: 2025-10-23
+Total Test Files: 64
+
+DIRECTORY STRUCTURE:
+===================
+
+tests/
+├── unit/                           # Unit tests (isolated component testing)
+│   ├── core/                       # Core component tests
+│   │   └── (core component unit tests)
+│   ├── api/                        # API layer unit tests
+│   │   ├── test_authentication.py (planned)
+│   │   └── (other API unit tests)
+│   └── rules/                      # Risk rule unit tests
+│       ├── test_auth_loss_guard.py
+│       ├── test_cooldown_after_loss.py
+│       ├── test_daily_realized_loss.py
+│       ├── test_daily_unrealized_loss.py
+│       ├── test_max_contracts.py
+│       ├── test_max_contracts_per_instrument.py
+│       ├── test_max_unrealized_profit.py
+│       ├── test_no_stop_loss_grace.py
+│       ├── test_session_block_outside_hours.py
+│       ├── test_symbol_blocks.py
+│       ├── test_trade_frequency_limit.py
+│       └── test_trade_management.py
+│
+├── integration/                    # Integration tests (multi-component)
+│   ├── api/                        # API integration tests
+│   │   ├── conftest.py
+│   │   ├── test_authentication.py
+│   │   ├── test_error_handling.py
+│   │   ├── test_order_management.py
+│   │   └── test_position_management.py
+│   ├── database/                   # Database integration tests
+│   │   └── (database integration tests)
+│   ├── signalr/                    # SignalR integration tests
+│   │   ├── test_connection.py
+│   │   ├── test_event_parsing.py
+│   │   ├── test_event_subscription.py
+│   │   └── test_reconnection.py
+│   ├── workflows/                  # Workflow integration tests
+│   │   └── (workflow integration tests)
+│   ├── test_database_integration.py
+│   └── test_phase0_integration.py
+│
+├── e2e/                            # End-to-end tests (full system)
+│   ├── test_complete_trading_flow.py
+│   ├── test_daily_reset.py
+│   ├── test_network_recovery.py
+│   ├── test_performance.py
+│   ├── test_rule_violations.py
+│   └── test_signalr_triggers.py
+│
+├── fixtures/                       # Test fixtures and mock data
+│   ├── __init__.py
+│   ├── README.md                   # Fixture documentation
+│   ├── accounts.py                 # Account fixtures
+│   ├── api_responses.py            # API response fixtures
+│   ├── configs.py                  # Configuration fixtures
+│   ├── contracts.py                # Contract fixtures
+│   ├── lockouts.py                 # Lockout state fixtures
+│   ├── mock_market.py              # Market simulator (NEW)
+│   ├── orders.py                   # Order fixtures
+│   ├── positions.py                # Position fixtures
+│   ├── quotes.py                   # Quote data fixtures
+│   ├── signalr_events.py           # SignalR event fixtures
+│   └── trades.py                   # Trade fixtures
+│
+├── swarm/                          # Swarm testing infrastructure
+│   └── (swarm coordination tests)
+│
+├── logs/                           # Test logs
+│   ├── coverage/
+│   └── reports/
+│
+├── conftest.py                     # Global pytest configuration
+├── pytest.ini                      # Pytest settings
+├── pytest_logging.py               # Logging plugin
+├── log_utils.py                    # Logging utilities
+└── fixtures_reference.md           # Fixture documentation
+
+
+TEST ORGANIZATION PRINCIPLES:
+==============================
+
+1. UNIT TESTS (tests/unit/)
+   - Test individual components in isolation
+   - Mock all external dependencies
+   - Fast execution (< 1s per test)
+   - High coverage of edge cases
+   - Location: tests/unit/{component}/test_{feature}.py
+
+2. INTEGRATION TESTS (tests/integration/)
+   - Test multiple components working together
+   - Use real implementations where possible
+   - Mock only external services (API, database)
+   - Moderate execution time (1-5s per test)
+   - Location: tests/integration/{subsystem}/test_{feature}.py
+
+3. END-TO-END TESTS (tests/e2e/)
+   - Test complete workflows through the system
+   - Simulate real user scenarios
+   - Use market simulator for realistic conditions
+   - Slower execution (5-30s per test)
+   - Location: tests/e2e/test_{workflow}.py
+
+4. FIXTURES (tests/fixtures/)
+   - Reusable test data and mocks
+   - Organized by domain (accounts, orders, etc.)
+   - Registered in conftest.py
+   - Each fixture file should export pytest fixtures
+
+
+NEW ADDITIONS:
+==============
+
+✅ tests/fixtures/mock_market.py
+   - MarketSimulator: Realistic price movement simulation
+   - OrderSimulator: Order execution with slippage
+   - Market scenarios: Trending, volatile, flash crash
+   - Pytest fixtures: market_simulator, order_simulator, sample_tick, sample_orderbook
+   - Based on project-x-py SDK integration-tester pattern
+
+✅ Updated tests/conftest.py
+   - Registered mock_market fixture module
+   - Available to all tests automatically
+
+
+FIXTURE USAGE:
+==============
+
+All fixtures are auto-discovered by pytest. To use in tests:
+
+```python
+# Unit test example
+def test_my_feature(sample_position, mock_actions):
+    # Fixtures injected automatically
+    result = my_function(sample_position)
+    assert result.is_valid
+
+# Integration test with market simulator
+async def test_order_flow(market_simulator, order_simulator):
+    # Generate market ticks
+    async for tick in market_simulator.generate_tick_stream(rate=10, max_ticks=5):
+        print(f"Price: {tick.last}")
+
+    # Place simulated order
+    order = await order_simulator.place_order({
+        'contract_id': 'MNQ',
+        'type': 'market',
+        'side': 0,
+        'size': 1
+    })
+    assert order.status == 'filled'
+```
+
+
+AVAILABLE FIXTURES:
+===================
+
+From fixtures/accounts.py:
+  - sample_account
+  - sample_account_dict
+  - multiple_accounts
+  - (see file for complete list)
+
+From fixtures/orders.py:
+  - sample_buy_order
+  - sample_sell_order
+  - sample_bracket_order
+  - (see file for complete list)
+
+From fixtures/positions.py:
+  - sample_long_position
+  - sample_short_position
+  - sample_flat_position
+  - (see file for complete list)
+
+From fixtures/trades.py:
+  - sample_trade
+  - sample_win_trade
+  - sample_loss_trade
+  - (see file for complete list)
+
+From fixtures/mock_market.py (NEW):
+  - market_simulator: Full market simulation
+  - order_simulator: Order execution simulation
+  - sample_tick: Single market tick
+  - sample_orderbook: Sample order book
+  - trading_suite_mock: Mock trading suite
+
+
+RUNNING TESTS:
+==============
+
+# Run all tests
+pytest
+
+# Run specific test type
+pytest tests/unit/                  # Unit tests only
+pytest tests/integration/           # Integration tests only
+pytest tests/e2e/                   # E2E tests only
+
+# Run specific test file
+pytest tests/unit/rules/test_daily_realized_loss.py
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run with verbose logging
+pytest -v -s --log-cli-level=DEBUG
+
+# Run only tests matching pattern
+pytest -k "daily_loss"
+
+
+NEXT STEPS:
+===========
+
+1. ✅ Test structure is properly organized
+2. ✅ All fixtures are in tests/fixtures/
+3. ✅ Unit tests are in tests/unit/
+4. ✅ Integration tests are in tests/integration/
+5. ✅ E2E tests are in tests/e2e/
+6. ✅ Mock market simulator created
+7. ✅ conftest.py updated with new fixture
+
+NO REORGANIZATION NEEDED - Structure is already correct!
+
+
+NOTES:
+======
+
+- All test logic has been preserved
+- No tests were deleted or modified
+- Only added new mock_market.py fixture
+- Test imports are all correct (using absolute imports via sys.path)
+- Logging is properly configured via pytest_logging.py
+- All fixtures auto-register via pytest_plugins in conftest.py

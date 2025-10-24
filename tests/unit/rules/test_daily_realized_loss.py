@@ -54,6 +54,7 @@ class TestDailyRealizedLoss:
         }
 
         mock_pnl_tracker.get_daily_realized_pnl.return_value = -400
+        mock_pnl_tracker.add_trade_pnl.return_value = -450  # After adding -50 to -400
 
         trade_event = {
             'id': 101112,

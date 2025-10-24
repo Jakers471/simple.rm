@@ -10,11 +10,19 @@ import sys
 import logging
 from pathlib import Path
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Add project root to path so imports work
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Import logging configuration plugin
-pytest_plugins = ['pytest_logging']
+# Import logging configuration plugin and fixture modules
+pytest_plugins = [
+    'pytest_logging',
+    'fixtures.positions',
+    'fixtures.orders',
+    'fixtures.trades',
+    'fixtures.accounts',
+    'fixtures.api_responses',
+    'fixtures.mock_market'
+]
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -65,3 +73,27 @@ def log_test_execution(request):
 def logger():
     """Provide a logger instance for tests"""
     return logging.getLogger('test_runner')
+
+
+# Add mock fixtures for symbol_blocks tests
+@pytest.fixture
+def mock_lockout_manager():
+    """Mock lockout manager that returns False for is_symbol_locked by default"""
+    from unittest.mock import Mock
+    mock = Mock()
+    mock.is_symbol_locked.return_value = False
+    return mock
+
+
+@pytest.fixture
+def mock_actions():
+    """Mock enforcement actions"""
+    from unittest.mock import Mock
+    return Mock()
+
+
+@pytest.fixture
+def mock_logger():
+    """Mock logger for enforcement tracking"""
+    from unittest.mock import Mock
+    return Mock()

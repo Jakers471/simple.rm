@@ -1,14 +1,42 @@
 """Trade history fixtures for testing trade frequency and realized P&L tracking
 
-All fixtures return trade event dictionaries.
+IMPORTANT: This file contains two types of fixtures:
+1. API response fixtures (camelCase) - Mock TopstepX API responses
+2. Internal format fixtures (snake_case) - For internal processing/testing
+
+Use API response fixtures when testing API clients/parsers.
+Use internal format fixtures when testing core logic that expects converted data.
 """
 import pytest
 from datetime import datetime, timedelta, timezone
 
 
+# ============================================================================
+# API RESPONSE FIXTURES (TopstepX API Format - camelCase)
+# ============================================================================
+
+@pytest.fixture
+def trade_single_profit_api():
+    """Single profitable trade - API response format (camelCase)"""
+    return {
+        "id": 10001,
+        "accountId": 123,
+        "contractId": "CON.F.US.MNQ.U25",
+        "quantity": 2,
+        "profitAndLoss": 45.50,
+        "executionTime": "2025-01-17T14:45:15Z",
+        "entryPrice": 21000.50,
+        "exitPrice": 21023.00
+    }
+
+
+# ============================================================================
+# INTERNAL FORMAT FIXTURES (snake_case - for core logic)
+# ============================================================================
+
 @pytest.fixture
 def trade_single_profit():
-    """Single profitable trade (+$45.50)"""
+    """Single profitable trade (+$45.50) - Internal format"""
     return {
         "id": 10001,
         "account_id": 123,
@@ -22,8 +50,23 @@ def trade_single_profit():
 
 
 @pytest.fixture
+def trade_single_loss_api():
+    """Single loss trade - API response format (camelCase)"""
+    return {
+        "id": 10002,
+        "accountId": 123,
+        "contractId": "CON.F.US.MNQ.U25",
+        "quantity": 3,
+        "profitAndLoss": -120.00,
+        "executionTime": "2025-01-17T15:00:00Z",
+        "entryPrice": 21000.00,
+        "exitPrice": 20980.00
+    }
+
+
+@pytest.fixture
 def trade_single_loss():
-    """Single loss trade (-$120.00)"""
+    """Single loss trade (-$120.00) - Internal format"""
     return {
         "id": 10002,
         "account_id": 123,

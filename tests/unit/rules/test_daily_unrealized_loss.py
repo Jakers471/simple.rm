@@ -34,6 +34,24 @@ def mock_logger():
     return Mock()
 
 
+@pytest.fixture
+def mock_state_manager():
+    """Mock state manager for positions."""
+    return Mock()
+
+
+@pytest.fixture
+def mock_contract_cache():
+    """Mock contract cache for contract details."""
+    return Mock()
+
+
+@pytest.fixture
+def mock_quote_tracker():
+    """Mock quote tracker for current prices."""
+    return Mock()
+
+
 class TestDailyUnrealizedLoss:
     """Test suite for RULE-004: DailyUnrealizedLoss."""
 
@@ -209,15 +227,20 @@ class TestDailyUnrealizedLoss:
         }
 
         mock_state_manager.get_all_positions.return_value = [{
-            'contract_id': 'CON.F.US.MNQ.U25',
+            'contractId': 'CON.F.US.MNQ.U25',
             'type': 1,  # Long
             'size': 2,
             'averagePrice': 21000.00
         }]
 
         # When
-        from src.state.pnl_tracker import PNLTracker
-        pnl_tracker = PNLTracker(mock_state_manager, mock_contract_cache, mock_quote_tracker)
+        from src.core.pnl_tracker import PnLTracker
+        pnl_tracker = PnLTracker(
+            db=None,
+            state_mgr=mock_state_manager,
+            quote_tracker=mock_quote_tracker,
+            contract_cache=mock_contract_cache
+        )
 
         from src.rules.daily_unrealized_loss import DailyUnrealizedLossRule
         rule = DailyUnrealizedLossRule(config, pnl_tracker, mock_actions, None)
@@ -254,15 +277,20 @@ class TestDailyUnrealizedLoss:
         }
 
         mock_state_manager.get_all_positions.return_value = [{
-            'contract_id': 'CON.F.US.MNQ.U25',
+            'contractId': 'CON.F.US.MNQ.U25',
             'type': 2,  # Short
             'size': 2,
             'averagePrice': 21000.00
         }]
 
         # When
-        from src.state.pnl_tracker import PNLTracker
-        pnl_tracker = PNLTracker(mock_state_manager, mock_contract_cache, mock_quote_tracker)
+        from src.core.pnl_tracker import PnLTracker
+        pnl_tracker = PnLTracker(
+            db=None,
+            state_mgr=mock_state_manager,
+            quote_tracker=mock_quote_tracker,
+            contract_cache=mock_contract_cache
+        )
 
         from src.rules.daily_unrealized_loss import DailyUnrealizedLossRule
         rule = DailyUnrealizedLossRule(config, pnl_tracker, mock_actions, None)
@@ -293,15 +321,21 @@ class TestDailyUnrealizedLoss:
         mock_quote_tracker.get_quote.return_value = None  # No quote
 
         mock_state_manager.get_all_positions.return_value = [{
-            'contract_id': 'CON.F.US.MNQ.U25',
+            'contractId': 'CON.F.US.MNQ.U25',
             'type': 1,
             'size': 2,
             'averagePrice': 21000.00
         }]
 
         # When
-        from src.state.pnl_tracker import PNLTracker
-        pnl_tracker = PNLTracker(mock_state_manager, mock_contract_cache, mock_quote_tracker)
+        from src.core.pnl_tracker import PnLTracker
+        pnl_tracker = PnLTracker(
+            db=None,
+            state_mgr=mock_state_manager,
+            quote_tracker=mock_quote_tracker,
+            contract_cache=mock_contract_cache,
+            log_handler=mock_logger
+        )
 
         from src.rules.daily_unrealized_loss import DailyUnrealizedLossRule
         rule = DailyUnrealizedLossRule(config, pnl_tracker, mock_actions, None, mock_logger)

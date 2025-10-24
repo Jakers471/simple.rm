@@ -1,0 +1,605 @@
+{
+  "_meta": {
+    "description": "Backend data contracts extracted from implementation code",
+    "created": "2025-10-23",
+    "agent": "Backend Contract Analyzer",
+    "naming_pattern": "MIXED - camelCase for object fields, snake_case for DB columns",
+    "sources": [
+      "src/core/state_manager.py",
+      "src/core/pnl_tracker.py",
+      "src/core/quote_tracker.py",
+      "src/core/contract_cache.py",
+      "src/core/trade_counter.py",
+      "tests/fixtures/*.py"
+    ]
+  },
+
+  "Account": {
+    "_description": "Account configuration and status objects",
+    "account_id": {
+      "type": "int",
+      "used_by": ["StateManager", "PnLTracker", "TradeCounter", "All Rules"],
+      "spec_says": "account_id",
+      "notes": "Primary identifier, always snake_case in code and DB",
+      "example": 123
+    },
+    "username": {
+      "type": "string",
+      "used_by": ["Account fixtures"],
+      "spec_says": "username",
+      "example": "test_trader@example.com"
+    },
+    "api_key": {
+      "type": "string",
+      "used_by": ["Account configuration"],
+      "spec_says": "api_key",
+      "example": "test_api_key_123"
+    },
+    "enabled": {
+      "type": "boolean",
+      "used_by": ["Account configuration"],
+      "spec_says": "enabled",
+      "example": true
+    },
+    "status": {
+      "type": "string",
+      "used_by": ["Account status tracking"],
+      "spec_says": "status",
+      "values": ["Active", "Suspended"],
+      "example": "Active"
+    },
+    "balance": {
+      "type": "float",
+      "used_by": ["Account status"],
+      "spec_says": "balance",
+      "example": 50000.00
+    },
+    "equity": {
+      "type": "float",
+      "used_by": ["Account status"],
+      "spec_says": "equity",
+      "example": 50150.50
+    }
+  },
+
+  "Position": {
+    "_description": "Position objects from GatewayUserPosition events",
+    "_event_source": "GatewayUserPosition SignalR event",
+    "id": {
+      "type": "int",
+      "used_by": ["StateManager.update_positions", "StateManager.update_position"],
+      "spec_says": "id",
+      "notes": "Position ID, stored as 'id' in memory, 'id' in DB primary key",
+      "example": 12345
+    },
+    "accountId": {
+      "type": "int",
+      "used_by": ["StateManager.update_position (event field)", "All position handlers"],
+      "spec_says": "accountId",
+      "notes": "CAMELCASE in events, snake_case in DB (account_id)",
+      "db_column": "account_id",
+      "example": 123
+    },
+    "contractId": {
+      "type": "string",
+      "used_by": ["StateManager", "PnLTracker", "All rules"],
+      "spec_says": "contractId",
+      "notes": "CAMELCASE in memory dict, snake_case in DB (contract_id)",
+      "db_column": "contract_id",
+      "example": "CON.F.US.MNQ.U25"
+    },
+    "type": {
+      "type": "int",
+      "used_by": ["StateManager", "PnLTracker.calculate_unrealized_pnl"],
+      "spec_says": "type",
+      "values": {
+        "1": "LONG",
+        "2": "SHORT"
+      },
+      "example": 1
+    },
+    "size": {
+      "type": "int",
+      "used_by": ["StateManager", "PnLTracker"],
+      "spec_says": "size",
+      "notes": "Number of contracts, size=0 means position closed",
+      "example": 3
+    },
+    "averagePrice": {
+      "type": "float",
+      "used_by": ["StateManager", "PnLTracker.calculate_unrealized_pnl"],
+      "spec_says": "averagePrice",
+      "notes": "CAMELCASE in memory, snake_case in DB (average_price)",
+      "db_column": "average_price",
+      "example": 21000.50
+    },
+    "creationTimestamp": {
+      "type": "string (ISO 8601)",
+      "used_by": ["StateManager"],
+      "spec_says": "creationTimestamp",
+      "notes": "CAMELCASE in memory, snake_case in DB (created_at)",
+      "db_column": "created_at",
+      "example": "2025-01-17T14:30:00Z"
+    },
+    "createdAt": {
+      "type": "string (ISO 8601)",
+      "used_by": ["SignalR events"],
+      "spec_says": "createdAt",
+      "notes": "Alternative field name in some events, maps to creationTimestamp",
+      "example": "2025-01-17T14:30:00Z"
+    },
+    "updatedAt": {
+      "type": "string (ISO 8601)",
+      "used_by": ["SignalR events"],
+      "spec_says": "updatedAt",
+      "notes": "Position last update time from events",
+      "example": "2025-01-17T14:35:00Z"
+    }
+  },
+
+  "Order": {
+    "_description": "Order objects from GatewayUserOrder events",
+    "_event_source": "GatewayUserOrder SignalR event",
+    "id": {
+      "type": "int",
+      "used_by": ["StateManager.update_orders", "StateManager.update_order"],
+      "spec_says": "id",
+      "notes": "Order ID",
+      "example": 78901
+    },
+    "accountId": {
+      "type": "int",
+      "used_by": ["StateManager"],
+      "spec_says": "accountId",
+      "notes": "CAMELCASE in events/memory, snake_case in DB (account_id)",
+      "db_column": "account_id",
+      "example": 123
+    },
+    "contractId": {
+      "type": "string",
+      "used_by": ["StateManager", "Rules"],
+      "spec_says": "contractId",
+      "notes": "CAMELCASE in memory, snake_case in DB (contract_id)",
+      "db_column": "contract_id",
+      "example": "CON.F.US.MNQ.U25"
+    },
+    "type": {
+      "type": "int",
+      "used_by": ["StateManager"],
+      "spec_says": "type",
+      "values": {
+        "1": "MARKET",
+        "2": "LIMIT",
+        "3": "STOP_LIMIT",
+        "4": "STOP"
+      },
+      "example": 4
+    },
+    "side": {
+      "type": "int",
+      "used_by": ["StateManager"],
+      "spec_says": "side",
+      "values": {
+        "1": "BUY",
+        "2": "SELL"
+      },
+      "example": 1
+    },
+    "size": {
+      "type": "int",
+      "used_by": ["StateManager"],
+      "spec_says": "size",
+      "notes": "Number of contracts",
+      "example": 3
+    },
+    "limitPrice": {
+      "type": "float (optional)",
+      "used_by": ["StateManager"],
+      "spec_says": "limitPrice",
+      "notes": "CAMELCASE in memory, snake_case in DB (limit_price), null for non-limit orders",
+      "db_column": "limit_price",
+      "example": 21000.00
+    },
+    "stopPrice": {
+      "type": "float (optional)",
+      "used_by": ["StateManager"],
+      "spec_says": "stopPrice",
+      "notes": "CAMELCASE in memory, snake_case in DB (stop_price), null for non-stop orders",
+      "db_column": "stop_price",
+      "example": 20950.00
+    },
+    "state": {
+      "type": "int",
+      "used_by": ["StateManager.update_orders"],
+      "spec_says": "state",
+      "values": {
+        "1": "PENDING",
+        "2": "ACTIVE/WORKING",
+        "3": "FILLED",
+        "4": "CANCELED",
+        "5": "PARTIAL",
+        "6": "REJECTED"
+      },
+      "notes": "Terminal states (3,4,5,6) cause order removal from active tracking",
+      "example": 2
+    },
+    "creationTimestamp": {
+      "type": "string (ISO 8601)",
+      "used_by": ["StateManager"],
+      "spec_says": "creationTimestamp",
+      "notes": "CAMELCASE in memory, snake_case in DB (created_at)",
+      "db_column": "created_at",
+      "example": "2025-01-17T14:30:00Z"
+    },
+    "createdAt": {
+      "type": "string (ISO 8601)",
+      "used_by": ["SignalR events"],
+      "spec_says": "createdAt",
+      "notes": "Alternative field name in events",
+      "example": "2025-01-17T14:30:00Z"
+    },
+    "fillPrice": {
+      "type": "float (optional)",
+      "used_by": ["Order fixtures"],
+      "spec_says": "fillPrice",
+      "notes": "CAMELCASE, present on filled orders",
+      "example": 21000.25
+    },
+    "filledSize": {
+      "type": "int (optional)",
+      "used_by": ["Order fixtures"],
+      "spec_says": "filledSize",
+      "notes": "CAMELCASE, present on partial/filled orders",
+      "example": 3
+    },
+    "rejectionReason": {
+      "type": "string (optional)",
+      "used_by": ["SignalR events"],
+      "spec_says": "rejectionReason",
+      "notes": "CAMELCASE, present on rejected orders",
+      "example": "Insufficient margin"
+    }
+  },
+
+  "Trade": {
+    "_description": "Trade/fill events from GatewayUserTrade SignalR events",
+    "_event_source": "GatewayUserTrade SignalR event",
+    "id": {
+      "type": "int",
+      "used_by": ["Trade fixtures"],
+      "spec_says": "id",
+      "notes": "Trade ID",
+      "example": 10001
+    },
+    "accountId": {
+      "type": "int",
+      "used_by": ["PnLTracker", "TradeCounter"],
+      "spec_says": "accountId",
+      "notes": "CAMELCASE in events, snake_case in code (account_id)",
+      "example": 123
+    },
+    "contractId": {
+      "type": "string",
+      "used_by": ["PnLTracker", "TradeCounter"],
+      "spec_says": "contractId",
+      "notes": "CAMELCASE in events, snake_case in some code (contract_id)",
+      "example": "CON.F.US.MNQ.U25"
+    },
+    "quantity": {
+      "type": "int",
+      "used_by": ["Trade fixtures"],
+      "spec_says": "quantity",
+      "notes": "Number of contracts in trade",
+      "example": 2
+    },
+    "profitAndLoss": {
+      "type": "float",
+      "used_by": ["PnLTracker.add_trade_pnl"],
+      "spec_says": "profitAndLoss",
+      "notes": "CAMELCASE, realized P&L for this trade (can be negative)",
+      "example": 45.50
+    },
+    "profit_and_loss": {
+      "type": "float",
+      "used_by": ["Trade fixtures (snake_case variant)"],
+      "spec_says": "profit_and_loss",
+      "notes": "SNAKE_CASE variant in some fixtures",
+      "example": -120.00
+    },
+    "executionTime": {
+      "type": "string (ISO 8601)",
+      "used_by": ["SignalR events"],
+      "spec_says": "executionTime",
+      "notes": "CAMELCASE",
+      "example": "2025-01-17T14:45:15Z"
+    },
+    "execution_time": {
+      "type": "string (ISO 8601)",
+      "used_by": ["Trade fixtures (snake_case variant)"],
+      "spec_says": "execution_time",
+      "notes": "SNAKE_CASE variant",
+      "example": "2025-01-17T14:45:15Z"
+    },
+    "entryPrice": {
+      "type": "float",
+      "used_by": ["Trade fixtures"],
+      "spec_says": "entryPrice",
+      "notes": "CAMELCASE",
+      "example": 21000.50
+    },
+    "exitPrice": {
+      "type": "float",
+      "used_by": ["Trade fixtures"],
+      "spec_says": "exitPrice",
+      "notes": "CAMELCASE",
+      "example": 21023.00
+    }
+  },
+
+  "Quote": {
+    "_description": "Market quote data from MarketQuote/GatewayQuote events",
+    "_event_source": "MarketQuote/GatewayQuote SignalR event",
+    "contractId": {
+      "type": "string",
+      "used_by": ["QuoteTracker"],
+      "spec_says": "contractId",
+      "notes": "CAMELCASE in events, snake_case as dict key (contract_id)",
+      "example": "CON.F.US.MNQ.U25"
+    },
+    "bid": {
+      "type": "float",
+      "used_by": ["QuoteTracker.update_quote"],
+      "spec_says": "bid",
+      "notes": "Best bid price",
+      "example": 21000.25
+    },
+    "ask": {
+      "type": "float",
+      "used_by": ["QuoteTracker.update_quote"],
+      "spec_says": "ask",
+      "notes": "Best ask price",
+      "example": 21000.50
+    },
+    "last": {
+      "type": "float",
+      "used_by": ["QuoteTracker.update_quote"],
+      "spec_says": "last",
+      "notes": "Last traded price",
+      "example": 21000.50
+    },
+    "lastPrice": {
+      "type": "float",
+      "used_by": ["QuoteTracker internal storage"],
+      "spec_says": "lastPrice",
+      "notes": "CAMELCASE, stored as 'lastPrice' in quote dict",
+      "example": 21000.50
+    },
+    "bestBid": {
+      "type": "float",
+      "used_by": ["QuoteTracker internal storage"],
+      "spec_says": "bestBid",
+      "notes": "CAMELCASE, stored as 'bestBid' in quote dict",
+      "example": 21000.25
+    },
+    "bestAsk": {
+      "type": "float",
+      "used_by": ["QuoteTracker internal storage"],
+      "spec_says": "bestAsk",
+      "notes": "CAMELCASE, stored as 'bestAsk' in quote dict",
+      "example": 21000.50
+    },
+    "timestamp": {
+      "type": "string (ISO 8601) or datetime",
+      "used_by": ["QuoteTracker"],
+      "spec_says": "timestamp",
+      "notes": "Exchange timestamp for the quote",
+      "example": "2025-01-17T14:45:15.123Z"
+    },
+    "lastUpdated": {
+      "type": "datetime",
+      "used_by": ["QuoteTracker internal"],
+      "spec_says": "lastUpdated",
+      "notes": "CAMELCASE, local update time for staleness checking",
+      "example": "datetime.now()"
+    }
+  },
+
+  "Contract": {
+    "_description": "Contract metadata from REST API /api/Contract/searchById",
+    "_source": "REST API response",
+    "id": {
+      "type": "string",
+      "used_by": ["ContractCache"],
+      "spec_says": "id",
+      "notes": "Contract ID (same as contractId)",
+      "example": "CON.F.US.MNQ.U25"
+    },
+    "tickSize": {
+      "type": "float",
+      "used_by": ["ContractCache", "PnLTracker.calculate_unrealized_pnl"],
+      "spec_says": "tickSize",
+      "notes": "CAMELCASE in memory, snake_case in DB (tick_size)",
+      "db_column": "tick_size",
+      "example": 0.25
+    },
+    "tickValue": {
+      "type": "float",
+      "used_by": ["ContractCache", "PnLTracker.calculate_unrealized_pnl"],
+      "spec_says": "tickValue",
+      "notes": "CAMELCASE in memory, snake_case in DB (tick_value)",
+      "db_column": "tick_value",
+      "example": 0.50
+    },
+    "symbolId": {
+      "type": "string",
+      "used_by": ["ContractCache"],
+      "spec_says": "symbolId",
+      "notes": "CAMELCASE in memory, snake_case in DB (symbol_id)",
+      "db_column": "symbol_id",
+      "example": "MNQ"
+    },
+    "name": {
+      "type": "string",
+      "used_by": ["ContractCache"],
+      "spec_says": "name",
+      "notes": "Human-readable contract name",
+      "example": "Micro E-mini Nasdaq-100"
+    }
+  },
+
+  "PositionEvent_GatewayUserPosition": {
+    "_description": "Full SignalR event payload structure for GatewayUserPosition",
+    "_event_type": "GatewayUserPosition",
+    "_fields_use": "camelCase for all event fields",
+    "id": {"type": "int", "example": 12347},
+    "accountId": {"type": "int", "example": 123, "notes": "CAMELCASE in event"},
+    "contractId": {"type": "string", "example": "CON.F.US.MNQ.U25", "notes": "CAMELCASE in event"},
+    "type": {"type": "int", "values": {"1": "LONG", "2": "SHORT"}, "example": 1},
+    "size": {"type": "int", "example": 3, "notes": "0 means closed"},
+    "averagePrice": {"type": "float", "example": 21000.50, "notes": "CAMELCASE in event"},
+    "createdAt": {"type": "string (ISO 8601)", "example": "2025-01-17T14:30:00Z"},
+    "updatedAt": {"type": "string (ISO 8601)", "example": "2025-01-17T14:30:00Z"}
+  },
+
+  "OrderEvent_GatewayUserOrder": {
+    "_description": "Full SignalR event payload structure for GatewayUserOrder",
+    "_event_type": "GatewayUserOrder",
+    "_fields_use": "camelCase for all event fields",
+    "id": {"type": "int", "example": 78903},
+    "accountId": {"type": "int", "example": 123, "notes": "CAMELCASE in event"},
+    "contractId": {"type": "string", "example": "CON.F.US.MNQ.U25", "notes": "CAMELCASE in event"},
+    "type": {"type": "int", "values": {"1": "MARKET", "2": "LIMIT", "4": "STOP"}, "example": 2},
+    "side": {"type": "int", "values": {"1": "BUY", "2": "SELL"}, "example": 1},
+    "size": {"type": "int", "example": 3},
+    "limitPrice": {"type": "float (optional)", "example": 21000.00, "notes": "CAMELCASE, null if not limit"},
+    "stopPrice": {"type": "float (optional)", "example": 20950.00, "notes": "CAMELCASE, null if not stop"},
+    "state": {"type": "int", "values": {"1": "PENDING", "2": "ACTIVE", "3": "FILLED", "4": "CANCELED", "5": "PARTIAL", "6": "REJECTED"}, "example": 2},
+    "createdAt": {"type": "string (ISO 8601)", "example": "2025-01-17T14:30:00Z"},
+    "updatedAt": {"type": "string (ISO 8601)", "example": "2025-01-17T14:30:00Z"}
+  },
+
+  "TradeEvent_GatewayUserTrade": {
+    "_description": "Full SignalR event payload structure for GatewayUserTrade",
+    "_event_type": "GatewayUserTrade",
+    "_fields_use": "camelCase for all event fields",
+    "id": {"type": "int", "example": 10001},
+    "accountId": {"type": "int", "example": 123, "notes": "CAMELCASE in event"},
+    "contractId": {"type": "string", "example": "CON.F.US.MNQ.U25", "notes": "CAMELCASE in event"},
+    "quantity": {"type": "int", "example": 2},
+    "profitAndLoss": {"type": "float", "example": 45.50, "notes": "CAMELCASE, can be negative"},
+    "executionTime": {"type": "string (ISO 8601)", "example": "2025-01-17T14:45:15Z"},
+    "entryPrice": {"type": "float", "example": 21000.50},
+    "exitPrice": {"type": "float", "example": 21023.00}
+  },
+
+  "QuoteEvent_MarketQuote": {
+    "_description": "Market quote event from SignalR",
+    "_event_type": "MarketQuote or GatewayQuote",
+    "_fields_use": "camelCase for all event fields",
+    "contractId": {"type": "string", "example": "CON.F.US.MNQ.U25", "notes": "CAMELCASE in event"},
+    "bid": {"type": "float", "example": 21000.25},
+    "ask": {"type": "float", "example": 21000.50},
+    "last": {"type": "float", "example": 21000.50},
+    "timestamp": {"type": "string (ISO 8601)", "example": "2025-01-17T14:45:15.123Z"}
+  },
+
+  "NamingPatternSummary": {
+    "_description": "Summary of naming conventions found in backend implementation",
+    "SignalR_Events": {
+      "pattern": "camelCase",
+      "examples": ["accountId", "contractId", "profitAndLoss", "executionTime", "averagePrice"],
+      "notes": "ALL incoming SignalR event fields use camelCase"
+    },
+    "In_Memory_Storage": {
+      "pattern": "camelCase",
+      "examples": ["accountId", "contractId", "limitPrice", "stopPrice", "creationTimestamp"],
+      "notes": "StateManager and most modules store data in camelCase dicts"
+    },
+    "Database_Columns": {
+      "pattern": "snake_case",
+      "examples": ["account_id", "contract_id", "limit_price", "stop_price", "created_at", "average_price"],
+      "notes": "ALL SQLite column names use snake_case"
+    },
+    "Function_Parameters": {
+      "pattern": "snake_case",
+      "examples": ["account_id", "contract_id", "position_event", "order_event"],
+      "notes": "Python function parameters follow snake_case convention"
+    },
+    "Mixed_Usage_Fields": {
+      "profitAndLoss_vs_profit_and_loss": {
+        "camelCase": "Used in SignalR events (profitAndLoss)",
+        "snake_case": "Used in some test fixtures (profit_and_loss)",
+        "notes": "INCONSISTENCY - both forms exist"
+      },
+      "executionTime_vs_execution_time": {
+        "camelCase": "Used in SignalR events (executionTime)",
+        "snake_case": "Used in some test fixtures (execution_time)",
+        "notes": "INCONSISTENCY - both forms exist"
+      }
+    }
+  },
+
+  "EnumValues": {
+    "_description": "Enum values used throughout backend",
+    "PositionType": {
+      "1": "LONG",
+      "2": "SHORT"
+    },
+    "OrderType": {
+      "1": "MARKET",
+      "2": "LIMIT",
+      "3": "STOP_LIMIT",
+      "4": "STOP"
+    },
+    "OrderSide": {
+      "1": "BUY",
+      "2": "SELL"
+    },
+    "OrderState": {
+      "1": "PENDING",
+      "2": "ACTIVE/WORKING",
+      "3": "FILLED",
+      "4": "CANCELED",
+      "5": "PARTIAL",
+      "6": "REJECTED"
+    },
+    "AccountStatus": {
+      "values": ["Active", "Suspended"],
+      "notes": "String values, not integers"
+    }
+  },
+
+  "CriticalFindings": {
+    "_priority": "HIGH",
+    "finding_1": {
+      "issue": "Mixed camelCase and snake_case in Trade events",
+      "details": "SignalR uses 'profitAndLoss' and 'executionTime' (camelCase), but test fixtures use 'profit_and_loss' and 'execution_time' (snake_case)",
+      "impact": "API Gateway must handle both or normalize",
+      "recommendation": "Frontend should send camelCase to match SignalR events"
+    },
+    "finding_2": {
+      "issue": "Position fields: creationTimestamp vs createdAt",
+      "details": "StateManager stores 'creationTimestamp' internally, but SignalR events use 'createdAt'",
+      "impact": "Field name mapping required in event handlers",
+      "recommendation": "API Gateway should accept both field names"
+    },
+    "finding_3": {
+      "issue": "Database vs Memory naming mismatch",
+      "details": "Memory uses camelCase (contractId, limitPrice), DB uses snake_case (contract_id, limit_price)",
+      "impact": "Requires field name translation at persistence layer",
+      "recommendation": "This is handled correctly in StateManager - no action needed"
+    },
+    "finding_4": {
+      "issue": "Order terminal states handling",
+      "details": "Orders with state in [3,4,5,6] (FILLED, CANCELED, PARTIAL, REJECTED) are removed from active tracking",
+      "impact": "Frontend must not send these states if order should remain active",
+      "recommendation": "Frontend should only send PENDING (1) or ACTIVE (2) for working orders"
+    },
+    "finding_5": {
+      "issue": "Position size=0 means closed",
+      "details": "When position size=0, StateManager removes it from tracking",
+      "impact": "Frontend must send size=0 to close positions, not delete events",
+      "recommendation": "Frontend should use size=0 to close positions"
+    }
+  }
+}

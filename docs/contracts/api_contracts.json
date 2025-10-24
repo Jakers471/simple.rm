@@ -1,0 +1,1167 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "TopstepX API Contracts - Complete Field Mapping",
+  "description": "Comprehensive mapping of all API objects, fields, types, and structures from TopstepX Gateway API documentation",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-23",
+
+  "objects": {
+    "Account": {
+      "description": "Account object from /api/Account/search and SignalR GatewayUserAccount events",
+      "fields": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "example": 123,
+          "description": "The account ID",
+          "apiFieldName": "id",
+          "notes": "Primary identifier for the account"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "example": "TEST_ACCOUNT_1",
+          "description": "The name of the account",
+          "apiFieldName": "name",
+          "notes": "Account display name"
+        },
+        "balance": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 50000,
+          "description": "The current balance of the account",
+          "apiFieldName": "balance",
+          "notes": "Account balance in currency units"
+        },
+        "canTrade": {
+          "type": "boolean",
+          "required": true,
+          "example": true,
+          "description": "Whether the account is eligible for trading",
+          "apiFieldName": "canTrade",
+          "notes": "Trading permission flag"
+        },
+        "isVisible": {
+          "type": "boolean",
+          "required": true,
+          "example": true,
+          "description": "Whether the account should be visible",
+          "apiFieldName": "isVisible",
+          "notes": "Visibility flag for UI display"
+        },
+        "simulated": {
+          "type": "boolean",
+          "required": false,
+          "example": false,
+          "description": "Whether the account is simulated or live",
+          "apiFieldName": "simulated",
+          "notes": "Only appears in SignalR events, not REST API responses"
+        }
+      }
+    },
+
+    "Order": {
+      "description": "Order object from /api/Order endpoints and SignalR GatewayUserOrder events",
+      "fields": {
+        "id": {
+          "type": "long",
+          "required": true,
+          "example": 36598,
+          "description": "The order ID",
+          "apiFieldName": "id",
+          "notes": "Primary identifier for the order"
+        },
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 704,
+          "description": "The account ID associated with the order",
+          "apiFieldName": "accountId",
+          "notes": "Foreign key to Account.id - camelCase!"
+        },
+        "contractId": {
+          "type": "string",
+          "required": true,
+          "example": "CON.F.US.EP.U25",
+          "description": "The contract ID on which the order is placed",
+          "apiFieldName": "contractId",
+          "notes": "Foreign key to Contract.id - camelCase!"
+        },
+        "symbolId": {
+          "type": "string",
+          "required": true,
+          "example": "F.US.EP",
+          "description": "The symbol ID corresponding to the contract",
+          "apiFieldName": "symbolId",
+          "notes": "Symbol identifier - camelCase!"
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2025-07-18T21:00:01.268009+00:00",
+          "description": "The timestamp when the order was created",
+          "apiFieldName": "creationTimestamp",
+          "notes": "ISO 8601 format with timezone - camelCase!"
+        },
+        "updateTimestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2025-07-18T21:00:01.268009+00:00",
+          "description": "The timestamp when the order was last updated",
+          "apiFieldName": "updateTimestamp",
+          "notes": "ISO 8601 format with timezone - camelCase!"
+        },
+        "status": {
+          "type": "integer",
+          "required": true,
+          "example": 2,
+          "description": "The current status of the order (OrderStatus enum)",
+          "apiFieldName": "status",
+          "enum": {
+            "None": 0,
+            "Open": 1,
+            "Filled": 2,
+            "Cancelled": 3,
+            "Expired": 4,
+            "Rejected": 5,
+            "Pending": 6
+          },
+          "notes": "Integer value maps to OrderStatus enum"
+        },
+        "type": {
+          "type": "integer",
+          "required": true,
+          "example": 2,
+          "description": "The type of the order (OrderType enum)",
+          "apiFieldName": "type",
+          "enum": {
+            "Unknown": 0,
+            "Limit": 1,
+            "Market": 2,
+            "StopLimit": 3,
+            "Stop": 4,
+            "TrailingStop": 5,
+            "JoinBid": 6,
+            "JoinAsk": 7
+          },
+          "notes": "Integer value maps to OrderType enum"
+        },
+        "side": {
+          "type": "integer",
+          "required": true,
+          "example": 0,
+          "description": "The side of the order (OrderSide enum): 0=Bid(buy), 1=Ask(sell)",
+          "apiFieldName": "side",
+          "enum": {
+            "Bid": 0,
+            "Ask": 1
+          },
+          "notes": "Integer value maps to OrderSide enum"
+        },
+        "size": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The size of the order in contracts",
+          "apiFieldName": "size",
+          "notes": "Number of contracts"
+        },
+        "limitPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": 2100.50,
+          "description": "The limit price for the order, if applicable",
+          "apiFieldName": "limitPrice",
+          "notes": "null for market orders - camelCase!"
+        },
+        "stopPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The stop price for the order, if applicable",
+          "apiFieldName": "stopPrice",
+          "notes": "null for non-stop orders - camelCase!"
+        },
+        "trailPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The trail price for the order, if applicable",
+          "apiFieldName": "trailPrice",
+          "notes": "Only for trailing stop orders - camelCase!"
+        },
+        "fillVolume": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The number of contracts filled on the order",
+          "apiFieldName": "fillVolume",
+          "notes": "Partial fills supported - camelCase!"
+        },
+        "filledPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": 6335.250000000,
+          "description": "The price at which the order was filled, if any",
+          "apiFieldName": "filledPrice",
+          "notes": "null until filled - camelCase!"
+        },
+        "customTag": {
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "example": "strategy-1",
+          "description": "The custom tag associated with the order, if any",
+          "apiFieldName": "customTag",
+          "notes": "Must be unique across account - camelCase!"
+        }
+      }
+    },
+
+    "Position": {
+      "description": "Position object from /api/Position/searchOpen and SignalR GatewayUserPosition events",
+      "fields": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "example": 6124,
+          "description": "The position ID",
+          "apiFieldName": "id",
+          "notes": "Primary identifier for the position"
+        },
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 536,
+          "description": "The account ID associated with the position",
+          "apiFieldName": "accountId",
+          "notes": "Foreign key to Account.id - camelCase!"
+        },
+        "contractId": {
+          "type": "string",
+          "required": true,
+          "example": "CON.F.US.GMET.J25",
+          "description": "The contract ID associated with the position",
+          "apiFieldName": "contractId",
+          "notes": "Foreign key to Contract.id - camelCase!"
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2025-04-21T19:52:32.175721+00:00",
+          "description": "The timestamp when the position was created or opened",
+          "apiFieldName": "creationTimestamp",
+          "notes": "ISO 8601 format with timezone - camelCase!"
+        },
+        "type": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The type of the position (PositionType enum)",
+          "apiFieldName": "type",
+          "enum": {
+            "Undefined": 0,
+            "Long": 1,
+            "Short": 2
+          },
+          "notes": "Integer value maps to PositionType enum"
+        },
+        "size": {
+          "type": "integer",
+          "required": true,
+          "example": 2,
+          "description": "The size of the position in contracts",
+          "apiFieldName": "size",
+          "notes": "Number of contracts in position"
+        },
+        "averagePrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 1575.750000000,
+          "description": "The average price of the position",
+          "apiFieldName": "averagePrice",
+          "notes": "Average entry price - camelCase!"
+        }
+      }
+    },
+
+    "Trade": {
+      "description": "Trade object from /api/Trade/search and SignalR GatewayUserTrade events",
+      "fields": {
+        "id": {
+          "type": "long",
+          "required": true,
+          "example": 8604,
+          "description": "The trade ID",
+          "apiFieldName": "id",
+          "notes": "Primary identifier for the trade"
+        },
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 203,
+          "description": "The account ID associated with the trade",
+          "apiFieldName": "accountId",
+          "notes": "Foreign key to Account.id - camelCase!"
+        },
+        "contractId": {
+          "type": "string",
+          "required": true,
+          "example": "CON.F.US.EP.H25",
+          "description": "The contract ID on which the trade occurred",
+          "apiFieldName": "contractId",
+          "notes": "Foreign key to Contract.id - camelCase!"
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2025-01-21T16:13:52.523293+00:00",
+          "description": "The timestamp when the trade was created",
+          "apiFieldName": "creationTimestamp",
+          "notes": "ISO 8601 format with timezone - camelCase!"
+        },
+        "price": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 6065.250000000,
+          "description": "The price at which the trade was executed",
+          "apiFieldName": "price",
+          "notes": "Execution price with high precision"
+        },
+        "profitAndLoss": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": 50.000000000,
+          "description": "The total profit and loss of the trade, if available",
+          "apiFieldName": "profitAndLoss",
+          "notes": "null for half-turn trades (opening trades) - camelCase!"
+        },
+        "fees": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 1.4000,
+          "description": "The total fees associated with the trade",
+          "apiFieldName": "fees",
+          "notes": "Commission and exchange fees"
+        },
+        "side": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The side of the trade (OrderSide enum): 0=Bid(buy), 1=Ask(sell)",
+          "apiFieldName": "side",
+          "enum": {
+            "Bid": 0,
+            "Ask": 1
+          },
+          "notes": "Integer value maps to OrderSide enum"
+        },
+        "size": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The size of the trade in contracts",
+          "apiFieldName": "size",
+          "notes": "Number of contracts traded"
+        },
+        "voided": {
+          "type": "boolean",
+          "required": true,
+          "example": false,
+          "description": "Whether the trade is voided",
+          "apiFieldName": "voided",
+          "notes": "Flag for voided/cancelled trades"
+        },
+        "orderId": {
+          "type": "long",
+          "required": true,
+          "example": 14328,
+          "description": "The order ID associated with the trade",
+          "apiFieldName": "orderId",
+          "notes": "Foreign key to Order.id - camelCase!"
+        }
+      }
+    },
+
+    "Contract": {
+      "description": "Contract object from /api/Contract/search endpoint",
+      "fields": {
+        "id": {
+          "type": "string",
+          "required": true,
+          "example": "CON.F.US.ENQ.U25",
+          "description": "The contract ID",
+          "apiFieldName": "id",
+          "notes": "Primary identifier for the contract"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "example": "NQU5",
+          "description": "The contract name",
+          "apiFieldName": "name",
+          "notes": "Short contract name/symbol"
+        },
+        "description": {
+          "type": "string",
+          "required": true,
+          "example": "E-mini NASDAQ-100: September 2025",
+          "description": "Full description of the contract",
+          "apiFieldName": "description",
+          "notes": "Descriptive text with expiry"
+        },
+        "tickSize": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 0.25,
+          "description": "The minimum price increment",
+          "apiFieldName": "tickSize",
+          "notes": "Minimum tick size - camelCase!"
+        },
+        "tickValue": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 5,
+          "description": "The dollar value of one tick",
+          "apiFieldName": "tickValue",
+          "notes": "Dollar value per tick - camelCase!"
+        },
+        "activeContract": {
+          "type": "boolean",
+          "required": true,
+          "example": true,
+          "description": "Whether the contract is currently active for trading",
+          "apiFieldName": "activeContract",
+          "notes": "Trading eligibility flag - camelCase!"
+        },
+        "symbolId": {
+          "type": "string",
+          "required": true,
+          "example": "F.US.ENQ",
+          "description": "The symbol ID for the contract",
+          "apiFieldName": "symbolId",
+          "notes": "Base symbol identifier - camelCase!"
+        }
+      }
+    },
+
+    "OrderPlaceRequest": {
+      "description": "Request body for /api/Order/place endpoint",
+      "fields": {
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 465,
+          "description": "The account ID",
+          "apiFieldName": "accountId",
+          "notes": "camelCase!"
+        },
+        "contractId": {
+          "type": "string",
+          "required": true,
+          "example": "CON.F.US.DA6.M25",
+          "description": "The contract ID",
+          "apiFieldName": "contractId",
+          "notes": "camelCase!"
+        },
+        "type": {
+          "type": "integer",
+          "required": true,
+          "example": 2,
+          "description": "The order type (OrderType enum)",
+          "apiFieldName": "type",
+          "enum": {
+            "Limit": 1,
+            "Market": 2,
+            "Stop": 4,
+            "TrailingStop": 5,
+            "JoinBid": 6,
+            "JoinAsk": 7
+          }
+        },
+        "side": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The side of the order (OrderSide enum): 0=Bid, 1=Ask",
+          "apiFieldName": "side",
+          "enum": {
+            "Bid": 0,
+            "Ask": 1
+          }
+        },
+        "size": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "The size of the order",
+          "apiFieldName": "size"
+        },
+        "limitPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The limit price for the order",
+          "apiFieldName": "limitPrice",
+          "notes": "camelCase!"
+        },
+        "stopPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The stop price for the order",
+          "apiFieldName": "stopPrice",
+          "notes": "camelCase!"
+        },
+        "trailPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The trail price for the order",
+          "apiFieldName": "trailPrice",
+          "notes": "camelCase!"
+        },
+        "customTag": {
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "Custom tag for the order (must be unique)",
+          "apiFieldName": "customTag",
+          "notes": "camelCase!"
+        },
+        "stopLossBracket": {
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "description": "Stop loss bracket configuration",
+          "apiFieldName": "stopLossBracket",
+          "notes": "camelCase! - nested object",
+          "fields": {
+            "ticks": {
+              "type": "integer",
+              "required": true,
+              "example": 10,
+              "description": "Number of ticks for stop loss"
+            },
+            "type": {
+              "type": "integer",
+              "required": true,
+              "example": 1,
+              "description": "Type of stop loss bracket (OrderType enum)",
+              "enum": {
+                "Limit": 1,
+                "Market": 2,
+                "Stop": 4,
+                "TrailingStop": 5,
+                "JoinBid": 6,
+                "JoinAsk": 7
+              }
+            }
+          }
+        },
+        "takeProfitBracket": {
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "description": "Take profit bracket configuration",
+          "apiFieldName": "takeProfitBracket",
+          "notes": "camelCase! - nested object",
+          "fields": {
+            "ticks": {
+              "type": "integer",
+              "required": true,
+              "example": 20,
+              "description": "Number of ticks for take profit"
+            },
+            "type": {
+              "type": "integer",
+              "required": true,
+              "example": 1,
+              "description": "Type of take profit bracket (OrderType enum)",
+              "enum": {
+                "Limit": 1,
+                "Market": 2,
+                "Stop": 4,
+                "TrailingStop": 5,
+                "JoinBid": 6,
+                "JoinAsk": 7
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "OrderModifyRequest": {
+      "description": "Request body for /api/Order/modify endpoint",
+      "fields": {
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 465,
+          "description": "The account ID",
+          "apiFieldName": "accountId",
+          "notes": "camelCase!"
+        },
+        "orderId": {
+          "type": "integer",
+          "required": true,
+          "example": 26974,
+          "description": "The order ID to modify",
+          "apiFieldName": "orderId",
+          "notes": "camelCase!"
+        },
+        "size": {
+          "type": "integer",
+          "required": false,
+          "nullable": true,
+          "example": 1,
+          "description": "The new size of the order",
+          "apiFieldName": "size"
+        },
+        "limitPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The new limit price",
+          "apiFieldName": "limitPrice",
+          "notes": "camelCase!"
+        },
+        "stopPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": 1604,
+          "description": "The new stop price",
+          "apiFieldName": "stopPrice",
+          "notes": "camelCase!"
+        },
+        "trailPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "The new trail price",
+          "apiFieldName": "trailPrice",
+          "notes": "camelCase!"
+        }
+      }
+    },
+
+    "OrderCancelRequest": {
+      "description": "Request body for /api/Order/cancel endpoint",
+      "fields": {
+        "accountId": {
+          "type": "integer",
+          "required": true,
+          "example": 465,
+          "description": "The account ID",
+          "apiFieldName": "accountId",
+          "notes": "camelCase!"
+        },
+        "orderId": {
+          "type": "integer",
+          "required": true,
+          "example": 26974,
+          "description": "The order ID to cancel",
+          "apiFieldName": "orderId",
+          "notes": "camelCase!"
+        }
+      }
+    },
+
+    "ApiResponse": {
+      "description": "Standard API response wrapper for all endpoints",
+      "fields": {
+        "success": {
+          "type": "boolean",
+          "required": true,
+          "example": true,
+          "description": "Whether the request succeeded",
+          "apiFieldName": "success"
+        },
+        "errorCode": {
+          "type": "integer",
+          "required": true,
+          "example": 0,
+          "description": "Error code (0 = no error)",
+          "apiFieldName": "errorCode",
+          "notes": "camelCase!"
+        },
+        "errorMessage": {
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "example": null,
+          "description": "Error message if any",
+          "apiFieldName": "errorMessage",
+          "notes": "camelCase! - null on success"
+        }
+      }
+    },
+
+    "AccountSearchResponse": {
+      "description": "Response from /api/Account/search",
+      "extends": "ApiResponse",
+      "fields": {
+        "accounts": {
+          "type": "array",
+          "items": "Account",
+          "required": true,
+          "description": "Array of Account objects",
+          "apiFieldName": "accounts"
+        }
+      }
+    },
+
+    "OrderSearchResponse": {
+      "description": "Response from /api/Order/search",
+      "extends": "ApiResponse",
+      "fields": {
+        "orders": {
+          "type": "array",
+          "items": "Order",
+          "required": true,
+          "description": "Array of Order objects",
+          "apiFieldName": "orders"
+        }
+      }
+    },
+
+    "PositionSearchResponse": {
+      "description": "Response from /api/Position/searchOpen",
+      "extends": "ApiResponse",
+      "fields": {
+        "positions": {
+          "type": "array",
+          "items": "Position",
+          "required": true,
+          "description": "Array of Position objects",
+          "apiFieldName": "positions"
+        }
+      }
+    },
+
+    "TradeSearchResponse": {
+      "description": "Response from /api/Trade/search",
+      "extends": "ApiResponse",
+      "fields": {
+        "trades": {
+          "type": "array",
+          "items": "Trade",
+          "required": true,
+          "description": "Array of Trade objects",
+          "apiFieldName": "trades"
+        }
+      }
+    },
+
+    "ContractSearchResponse": {
+      "description": "Response from /api/Contract/search",
+      "extends": "ApiResponse",
+      "fields": {
+        "contracts": {
+          "type": "array",
+          "items": "Contract",
+          "required": true,
+          "description": "Array of Contract objects",
+          "apiFieldName": "contracts"
+        }
+      }
+    },
+
+    "OrderPlaceResponse": {
+      "description": "Response from /api/Order/place",
+      "extends": "ApiResponse",
+      "fields": {
+        "orderId": {
+          "type": "long",
+          "required": true,
+          "example": 9056,
+          "description": "The ID of the created order",
+          "apiFieldName": "orderId",
+          "notes": "camelCase!"
+        }
+      }
+    },
+
+    "GatewayQuote": {
+      "description": "SignalR Market Hub - Quote event payload",
+      "fields": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "example": "F.US.EP",
+          "description": "The symbol ID",
+          "apiFieldName": "symbol"
+        },
+        "symbolName": {
+          "type": "string",
+          "required": true,
+          "example": "/ES",
+          "description": "Friendly symbol name (currently unused)",
+          "apiFieldName": "symbolName",
+          "notes": "camelCase!"
+        },
+        "lastPrice": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2100.25,
+          "description": "The last traded price",
+          "apiFieldName": "lastPrice",
+          "notes": "camelCase!"
+        },
+        "bestBid": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2100.00,
+          "description": "The current best bid price",
+          "apiFieldName": "bestBid",
+          "notes": "camelCase!"
+        },
+        "bestAsk": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2100.50,
+          "description": "The current best ask price",
+          "apiFieldName": "bestAsk",
+          "notes": "camelCase!"
+        },
+        "change": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 25.50,
+          "description": "The price change since previous close",
+          "apiFieldName": "change"
+        },
+        "changePercent": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 0.14,
+          "description": "The percent change since previous close",
+          "apiFieldName": "changePercent",
+          "notes": "camelCase!"
+        },
+        "open": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2090.00,
+          "description": "The opening price",
+          "apiFieldName": "open"
+        },
+        "high": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2110.00,
+          "description": "The session high price",
+          "apiFieldName": "high"
+        },
+        "low": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2080.00,
+          "description": "The session low price",
+          "apiFieldName": "low"
+        },
+        "volume": {
+          "type": "number",
+          "required": true,
+          "example": 12000,
+          "description": "The total traded volume",
+          "apiFieldName": "volume"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2024-07-21T13:45:00Z",
+          "description": "The last updated time",
+          "apiFieldName": "lastUpdated",
+          "notes": "camelCase!"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2024-07-21T13:45:00Z",
+          "description": "The quote timestamp",
+          "apiFieldName": "timestamp"
+        }
+      }
+    },
+
+    "GatewayDepth": {
+      "description": "SignalR Market Hub - Market Depth (DOM) event payload",
+      "fields": {
+        "timestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2024-07-21T13:45:00Z",
+          "description": "The timestamp of the DOM update",
+          "apiFieldName": "timestamp"
+        },
+        "type": {
+          "type": "integer",
+          "required": true,
+          "example": 1,
+          "description": "DOM type (DomType enum)",
+          "apiFieldName": "type",
+          "enum": {
+            "Unknown": 0,
+            "Ask": 1,
+            "Bid": 2,
+            "BestAsk": 3,
+            "BestBid": 4,
+            "Trade": 5,
+            "Reset": 6,
+            "Low": 7,
+            "High": 8,
+            "NewBestBid": 9,
+            "NewBestAsk": 10,
+            "Fill": 11
+          }
+        },
+        "price": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2100.00,
+          "description": "The price level",
+          "apiFieldName": "price"
+        },
+        "volume": {
+          "type": "number",
+          "required": true,
+          "example": 10,
+          "description": "The total volume at this price level",
+          "apiFieldName": "volume"
+        },
+        "currentVolume": {
+          "type": "integer",
+          "required": true,
+          "example": 5,
+          "description": "The current volume at this price level",
+          "apiFieldName": "currentVolume",
+          "notes": "camelCase!"
+        }
+      }
+    },
+
+    "GatewayTrade": {
+      "description": "SignalR Market Hub - Market Trade event payload",
+      "fields": {
+        "symbolId": {
+          "type": "string",
+          "required": true,
+          "example": "F.US.EP",
+          "description": "The symbol ID",
+          "apiFieldName": "symbolId",
+          "notes": "camelCase!"
+        },
+        "price": {
+          "type": "number",
+          "format": "decimal",
+          "required": true,
+          "example": 2100.25,
+          "description": "The trade price",
+          "apiFieldName": "price"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "example": "2024-07-21T13:45:00Z",
+          "description": "The trade timestamp",
+          "apiFieldName": "timestamp"
+        },
+        "type": {
+          "type": "integer",
+          "required": true,
+          "example": 0,
+          "description": "TradeLog type (TradeLogType enum)",
+          "apiFieldName": "type",
+          "enum": {
+            "Buy": 0,
+            "Sell": 1
+          }
+        },
+        "volume": {
+          "type": "number",
+          "required": true,
+          "example": 2,
+          "description": "The trade volume",
+          "apiFieldName": "volume"
+        }
+      }
+    }
+  },
+
+  "enums": {
+    "OrderStatus": {
+      "description": "Enum for order status values",
+      "values": {
+        "None": 0,
+        "Open": 1,
+        "Filled": 2,
+        "Cancelled": 3,
+        "Expired": 4,
+        "Rejected": 5,
+        "Pending": 6
+      }
+    },
+
+    "OrderType": {
+      "description": "Enum for order type values",
+      "values": {
+        "Unknown": 0,
+        "Limit": 1,
+        "Market": 2,
+        "StopLimit": 3,
+        "Stop": 4,
+        "TrailingStop": 5,
+        "JoinBid": 6,
+        "JoinAsk": 7
+      }
+    },
+
+    "OrderSide": {
+      "description": "Enum for order side values",
+      "values": {
+        "Bid": 0,
+        "Ask": 1
+      },
+      "notes": "Bid = Buy, Ask = Sell"
+    },
+
+    "PositionType": {
+      "description": "Enum for position type values",
+      "values": {
+        "Undefined": 0,
+        "Long": 1,
+        "Short": 2
+      }
+    },
+
+    "TradeLogType": {
+      "description": "Enum for trade log type values",
+      "values": {
+        "Buy": 0,
+        "Sell": 1
+      }
+    },
+
+    "DomType": {
+      "description": "Enum for market depth (DOM) type values",
+      "values": {
+        "Unknown": 0,
+        "Ask": 1,
+        "Bid": 2,
+        "BestAsk": 3,
+        "BestBid": 4,
+        "Trade": 5,
+        "Reset": 6,
+        "Low": 7,
+        "High": 8,
+        "NewBestBid": 9,
+        "NewBestAsk": 10,
+        "Fill": 11
+      }
+    }
+  },
+
+  "fieldNamingConventions": {
+    "description": "Critical naming conventions discovered in API",
+    "camelCaseFields": [
+      "accountId",
+      "contractId",
+      "symbolId",
+      "creationTimestamp",
+      "updateTimestamp",
+      "limitPrice",
+      "stopPrice",
+      "trailPrice",
+      "fillVolume",
+      "filledPrice",
+      "customTag",
+      "averagePrice",
+      "profitAndLoss",
+      "orderId",
+      "tickSize",
+      "tickValue",
+      "activeContract",
+      "stopLossBracket",
+      "takeProfitBracket",
+      "errorCode",
+      "errorMessage",
+      "symbolName",
+      "lastPrice",
+      "bestBid",
+      "bestAsk",
+      "changePercent",
+      "lastUpdated",
+      "currentVolume"
+    ],
+    "notes": "ALL API fields use camelCase, not snake_case. This is critical for request/response parsing!"
+  },
+
+  "timestampFormats": {
+    "description": "Timestamp format patterns found in API",
+    "format": "ISO 8601 with timezone",
+    "examples": [
+      "2025-07-18T21:00:01.268009+00:00",
+      "2025-04-21T19:52:32.175721+00:00",
+      "2024-07-21T13:45:00Z"
+    ],
+    "notes": "All timestamps include timezone information"
+  },
+
+  "criticalNotes": {
+    "fieldNaming": "API uses camelCase for ALL fields (accountId, not account_id)",
+    "nullableFields": "Many fields are nullable - check profitAndLoss, limitPrice, stopPrice, etc.",
+    "nestedObjects": "Bracket orders use nested objects (stopLossBracket, takeProfitBracket)",
+    "enumValues": "All enums use integer values, not strings",
+    "halfTurnTrades": "Trade.profitAndLoss is null for opening trades (half-turns)",
+    "precision": "Decimal fields use high precision (e.g., 6335.250000000)",
+    "signalREvents": "SignalR events use 'GatewayUser*' and 'Gateway*' event names"
+  }
+}

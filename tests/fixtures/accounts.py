@@ -1,13 +1,42 @@
 """Account configuration fixtures for testing multi-account scenarios
 
-All fixtures return account configuration data.
+IMPORTANT: This file contains two types of fixtures:
+1. API response fixtures (camelCase) - Mock TopstepX API responses
+2. Internal config fixtures (snake_case) - For local configuration/testing
+
+Use API response fixtures when testing API clients/parsers.
+Use internal config fixtures when testing configuration management.
 """
 import pytest
 
 
+# ============================================================================
+# API RESPONSE FIXTURES (TopstepX API Format - camelCase)
+# ============================================================================
+
+@pytest.fixture
+def account_details_api():
+    """Account details from API - API response format (camelCase)"""
+    return {
+        "id": 123,
+        "username": "test_trader@example.com",
+        "status": "Active",
+        "balance": 50000.00,
+        "equity": 50150.50,
+        "marginUsed": 5000.00,
+        "marginAvailable": 45150.50,
+        "buyingPower": 50000.00,
+        "unrealizedProfitLoss": 150.50
+    }
+
+
+# ============================================================================
+# INTERNAL CONFIG FIXTURES (snake_case - for local config)
+# ============================================================================
+
 @pytest.fixture
 def account_test_primary():
-    """Primary test account"""
+    """Primary test account - Internal config format"""
     return {
         "account_id": 123,
         "username": "test_trader@example.com",
@@ -121,8 +150,25 @@ def account_suspended_status():
 
 
 @pytest.fixture
+def account_suspended_api():
+    """Account suspended - API response format (camelCase)"""
+    return {
+        "id": 123,
+        "username": "suspended@example.com",
+        "status": "Suspended",
+        "balance": 48500.00,
+        "equity": 48500.00,
+        "marginUsed": 0.00,
+        "marginAvailable": 0.00,
+        "suspensionReason": "Exceeded daily loss limit",
+        "suspendedAt": "2025-01-17T14:50:00Z",
+        "suspendedUntil": "2025-01-17T17:00:00Z"
+    }
+
+
+@pytest.fixture
 def account_active_status():
-    """Account status: Active"""
+    """Account status: Active - Internal format"""
     return {
         "account_id": 123,
         "username": "active@example.com",

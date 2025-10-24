@@ -6,7 +6,7 @@ after position opens.
 """
 
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from datetime import datetime
 
 
@@ -70,7 +70,7 @@ class TestNoStopLossGrace:
         from src.rules.no_stop_loss_grace import NoStopLossGraceRule
         rule = NoStopLossGraceRule(config, mock_positions_pending_stop)
 
-        with Mock() as mock_datetime:
+        with patch('src.rules.no_stop_loss_grace.datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 7, 21, 14, 0, 15)
             result = rule.check(456, mock_positions_pending_stop[456])
 
@@ -89,7 +89,9 @@ class TestNoStopLossGrace:
             'contract_id': 'CON.F.US.MNQ.U25',
             'account_id': 123,
             'opened_at': datetime(2024, 7, 21, 14, 0, 0),
-            'has_stop_loss': False
+            'has_stop_loss': False,
+            'entry_price': 21000.00,  # Entry price above stop for long position
+            'position_type': 1  # Long position
         }
 
         order_event = {
@@ -108,10 +110,11 @@ class TestNoStopLossGrace:
         from src.rules.no_stop_loss_grace import NoStopLossGraceRule
         rule = NoStopLossGraceRule(config, mock_positions_pending_stop)
         rule.on_order_placed(order_event, mock_positions_pending_stop)
-        result = rule.check(456, mock_positions_pending_stop[456])
 
-        # Then
+        # Then - check flag was set before calling check() which removes it
         assert mock_positions_pending_stop[456]['has_stop_loss'] == True
+
+        result = rule.check(456, mock_positions_pending_stop[456])
         assert result is None
 
     def test_check_grace_period_expired(self, mock_positions_pending_stop):
@@ -137,8 +140,8 @@ class TestNoStopLossGrace:
         from src.rules.no_stop_loss_grace import NoStopLossGraceRule
         rule = NoStopLossGraceRule(config, mock_positions_pending_stop)
 
-        with Mock() as mock_datetime:
-            mock_datetime.now.return_value = datetime(2024, 7, 21, 14, 0, 35)
+        with patch('src.rules.no_stop_loss_grace.datetime') as mock_datetime:
+            mock_datetime.datetime.now.return_value = datetime(2024, 7, 21, 14, 0, 35)
             result = rule.check(456, mock_positions_pending_stop[456])
 
         # Then

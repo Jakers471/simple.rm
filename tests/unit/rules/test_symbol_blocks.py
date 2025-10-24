@@ -57,6 +57,7 @@ class TestSymbolBlocks:
         from src.utils.symbol_utils import extract_symbol_root
 
         rule = SymbolBlocksRule(config, mock_lockout_manager, mock_actions)
+        mock_lockout_manager.is_symbol_locked.return_value = False
         symbol = extract_symbol_root(position_event['contractId'])
         result = rule.check(position_event)
 
@@ -183,6 +184,7 @@ class TestSymbolBlocks:
         from src.utils.symbol_utils import extract_symbol_root
 
         rule = SymbolBlocksRule(config, mock_lockout_manager, mock_actions)
+        mock_lockout_manager.is_symbol_locked.return_value = False
         symbol = extract_symbol_root(position_event['contractId'])
         result = rule.check(position_event)
 

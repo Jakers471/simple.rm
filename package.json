@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^2.0.25",
-    "claude-flow": "^2.7.0",
+    "claude-flow": "^2.7.1",
     "flow-nexus": "^0.1.128",
     "ruv-swarm": "^1.0.20"
   }

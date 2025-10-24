@@ -1,13 +1,43 @@
 """Order test fixtures for testing order management and stop-loss rules
 
-All fixtures return order-compatible dictionaries.
+IMPORTANT: This file contains two types of fixtures:
+1. API response fixtures (camelCase) - Mock TopstepX API responses
+2. Internal format fixtures (snake_case) - For internal processing/testing
+
+Use API response fixtures when testing API clients/parsers.
+Use internal format fixtures when testing core logic that expects converted data.
 """
 import pytest
 
 
+# ============================================================================
+# API RESPONSE FIXTURES (TopstepX API Format - camelCase)
+# ============================================================================
+
+@pytest.fixture
+def order_stop_loss_working_api():
+    """Working stop-loss order - API response format (camelCase)"""
+    return {
+        "id": 78901,
+        "accountId": 123,
+        "contractId": "CON.F.US.MNQ.U25",
+        "type": 4,  # STOP
+        "side": 1,  # BUY (to close short)
+        "size": 3,
+        "stopPrice": 20950.00,
+        "state": 2,  # ACTIVE
+        "createdAt": "2025-01-17T14:30:05Z",
+        "updatedAt": "2025-01-17T14:30:05Z"
+    }
+
+
+# ============================================================================
+# INTERNAL FORMAT FIXTURES (snake_case - for core logic)
+# ============================================================================
+
 @pytest.fixture
 def order_stop_loss_working():
-    """Working stop-loss order (ACTIVE state)"""
+    """Working stop-loss order (ACTIVE state) - Internal format"""
     return {
         "id": 78901,
         "account_id": 123,
@@ -23,8 +53,25 @@ def order_stop_loss_working():
 
 
 @pytest.fixture
+def order_limit_working_api():
+    """Working limit order - API response format (camelCase)"""
+    return {
+        "id": 78902,
+        "accountId": 123,
+        "contractId": "CON.F.US.MNQ.U25",
+        "type": 2,  # LIMIT
+        "side": 1,  # BUY
+        "size": 2,
+        "limitPrice": 21000.00,
+        "state": 2,  # ACTIVE
+        "createdAt": "2025-01-17T14:30:00Z",
+        "updatedAt": "2025-01-17T14:30:00Z"
+    }
+
+
+@pytest.fixture
 def order_limit_working():
-    """Working limit order (ACTIVE state)"""
+    """Working limit order (ACTIVE state) - Internal format"""
     return {
         "id": 78902,
         "account_id": 123,

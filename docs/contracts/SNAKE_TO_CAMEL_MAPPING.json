@@ -1,0 +1,173 @@
+{
+  "description": "Quick reference: snake_case to camelCase field mapping for TopstepX API",
+  "usage": "Use this to fix all field name errors in the codebase",
+
+  "fieldMappings": {
+    "account_id": "accountId",
+    "contract_id": "contractId",
+    "symbol_id": "symbolId",
+    "creation_timestamp": "creationTimestamp",
+    "update_timestamp": "updateTimestamp",
+    "limit_price": "limitPrice",
+    "stop_price": "stopPrice",
+    "trail_price": "trailPrice",
+    "fill_volume": "fillVolume",
+    "filled_price": "filledPrice",
+    "custom_tag": "customTag",
+    "average_price": "averagePrice",
+    "profit_and_loss": "profitAndLoss",
+    "order_id": "orderId",
+    "tick_size": "tickSize",
+    "tick_value": "tickValue",
+    "active_contract": "activeContract",
+    "stop_loss_bracket": "stopLossBracket",
+    "take_profit_bracket": "takeProfitBracket",
+    "error_code": "errorCode",
+    "error_message": "errorMessage",
+    "symbol_name": "symbolName",
+    "last_price": "lastPrice",
+    "best_bid": "bestBid",
+    "best_ask": "bestAsk",
+    "change_percent": "changePercent",
+    "last_updated": "lastUpdated",
+    "current_volume": "currentVolume",
+    "can_trade": "canTrade",
+    "is_visible": "isVisible",
+    "only_active_accounts": "onlyActiveAccounts",
+    "start_timestamp": "startTimestamp",
+    "end_timestamp": "endTimestamp"
+  },
+
+  "objectNames": {
+    "description": "Nested object field names also use camelCase",
+    "stop_loss_bracket": "stopLossBracket",
+    "take_profit_bracket": "takeProfitBracket"
+  },
+
+  "commonPatterns": {
+    "timestamps": {
+      "pattern": "*_timestamp",
+      "replacement": "*Timestamp",
+      "examples": {
+        "creation_timestamp": "creationTimestamp",
+        "update_timestamp": "updateTimestamp",
+        "start_timestamp": "startTimestamp",
+        "end_timestamp": "endTimestamp"
+      }
+    },
+    "prices": {
+      "pattern": "*_price",
+      "replacement": "*Price",
+      "examples": {
+        "limit_price": "limitPrice",
+        "stop_price": "stopPrice",
+        "trail_price": "trailPrice",
+        "filled_price": "filledPrice",
+        "average_price": "averagePrice",
+        "last_price": "lastPrice",
+        "best_bid": "bestBid",
+        "best_ask": "bestAsk"
+      }
+    },
+    "ids": {
+      "pattern": "*_id",
+      "replacement": "*Id",
+      "examples": {
+        "account_id": "accountId",
+        "contract_id": "contractId",
+        "symbol_id": "symbolId",
+        "order_id": "orderId"
+      }
+    },
+    "volumes": {
+      "pattern": "*_volume",
+      "replacement": "*Volume",
+      "examples": {
+        "fill_volume": "fillVolume",
+        "current_volume": "currentVolume"
+      }
+    }
+  },
+
+  "pydanticAliasExample": {
+    "description": "How to handle this in Pydantic models",
+    "code": "from pydantic import BaseModel, Field\n\nclass Order(BaseModel):\n    account_id: int = Field(..., alias='accountId')\n    contract_id: str = Field(..., alias='contractId')\n    creation_timestamp: str = Field(..., alias='creationTimestamp')\n    limit_price: float | None = Field(None, alias='limitPrice')\n    \n    class Config:\n        populate_by_name = True\n        # Allow both snake_case and camelCase"
+  },
+
+  "searchAndReplaceRegex": {
+    "description": "Regex patterns for bulk find/replace",
+    "patterns": [
+      {
+        "find": "\\baccount_id\\b",
+        "replace": "accountId",
+        "notes": "Most common - used everywhere"
+      },
+      {
+        "find": "\\bcontract_id\\b",
+        "replace": "contractId",
+        "notes": "Second most common"
+      },
+      {
+        "find": "\\bcreation_timestamp\\b",
+        "replace": "creationTimestamp",
+        "notes": "Timestamp fields"
+      },
+      {
+        "find": "\\bupdate_timestamp\\b",
+        "replace": "updateTimestamp"
+      },
+      {
+        "find": "\\blimit_price\\b",
+        "replace": "limitPrice"
+      },
+      {
+        "find": "\\bstop_price\\b",
+        "replace": "stopPrice"
+      },
+      {
+        "find": "\\bfilled_price\\b",
+        "replace": "filledPrice"
+      },
+      {
+        "find": "\\bfill_volume\\b",
+        "replace": "fillVolume"
+      },
+      {
+        "find": "\\bcustom_tag\\b",
+        "replace": "customTag"
+      },
+      {
+        "find": "\\baverage_price\\b",
+        "replace": "averagePrice"
+      },
+      {
+        "find": "\\bprofit_and_loss\\b",
+        "replace": "profitAndLoss"
+      },
+      {
+        "find": "\\border_id\\b",
+        "replace": "orderId"
+      },
+      {
+        "find": "\\bsymbol_id\\b",
+        "replace": "symbolId"
+      },
+      {
+        "find": "\\berror_code\\b",
+        "replace": "errorCode"
+      },
+      {
+        "find": "\\berror_message\\b",
+        "replace": "errorMessage"
+      }
+    ]
+  },
+
+  "criticalReminders": [
+    "ALL TopstepX API fields are camelCase - no exceptions",
+    "This includes request bodies, response bodies, and SignalR events",
+    "Use Pydantic aliases if you want snake_case internally",
+    "Test both serialization (Python->JSON) and deserialization (JSON->Python)",
+    "Pay special attention to nested objects like stopLossBracket and takeProfitBracket"
+  ]
+}
